@@ -4,6 +4,7 @@
 
 ## TODO
 ```md
+# Required
 - [x] Literal Value (int)
 - [ ] State (variables/assignment)
 - [ ] Assignment and basic arithmetic (+ and -)
@@ -11,13 +12,13 @@
 - [ ] Conditional Execution (if statements)
 - [ ] Looping Construct (while)
 - [ ] Unbounded Memory (conceptually): (arrays)
-- [ ] Quality of Life features
-  - [ ] Includes
-  - [ ] Functions
-    - [ ] return
-      - [x] Literal
-      - [ ] Identifier
-  - [ ] Comments
+# Quality of Life features
+- [ ] Includes
+- [ ] Functions
+  - [ ] return
+    - [x] Literal
+    - [ ] Identifier
+- [ ] Comments
 ```
 
 ## Turing Completeness
