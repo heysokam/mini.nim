@@ -4,7 +4,7 @@
 
 ## TODO
 ```md
-- [ ] Literal Value (int)
+- [x] Literal Value (int)
 - [ ] State (variables/assignment)
 - [ ] Assignment and basic arithmetic (+ and -)
 - [ ] Operations to check conditions (== and !=)
@@ -14,6 +14,9 @@
 - [ ] Quality of Life features
   - [ ] Includes
   - [ ] Functions
+    - [ ] return
+      - [x] Literal
+      - [ ] Identifier
   - [ ] Comments
 ```
 

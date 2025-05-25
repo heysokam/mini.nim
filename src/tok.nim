@@ -13,8 +13,8 @@ import./rules as mini
 #_______________________________________
 # @section Tokenizer: Types
 #_____________________________
-type Sz  = uint
-type Pos = slate.source.Pos
+type Sz  * = uint
+type Pos * = slate.source.Pos
 
 type token_Id = mini.Id
 
