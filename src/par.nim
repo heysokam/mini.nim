@@ -96,11 +96,29 @@ func statement *(P :var Par) :ast.Statement=
 #_______________________________________
 # @section Parse: proc
 #_____________________________
+func Proc_args *(P :var Par) :ast.Proc_Args=
+  P.expect token_Id.sp_paren_L
+  P.move(1)
+  P.indentation()
+  # FIX: Add arguments
+  P.expect token_Id.sp_paren_R
+  P.move(1)
+  P.indentation()
+#_____________________________
 func Proc_body *(P :var Par) :ast.Proc_Body=
   P.expect token_Id.sp_equal
   P.move(1)
   P.indentation()
   result.add P.statement()
+#_____________________________
+func Proc_retT *(P :var Par) :ast.Type=
+  P.expect token_Id.sp_colon
+  P.move(1)
+  P.indentation()
+  P.expect token_Id.b_ident
+  result.name = P.tk.loc.From(P.src)
+  P.move(1)
+  P.indentation()
 #_____________________________
 func Proc *(P :var Par) :void=
   var res = ast.Node(kind: Proc)
@@ -120,20 +138,10 @@ func Proc *(P :var Par) :void=
     P.indentation()
   # Get the Args
   P.expect token_Id.sp_paren_L
-  P.move(1)
-  P.indentation()
-  # FIX: Add arguments
-  P.expect token_Id.sp_paren_R
-  P.move(1)
-  P.indentation()
+  res.proc_args = P.Proc_args()
   # Get the Return Type
   P.expect token_Id.sp_colon
-  P.move(1)
-  P.indentation()
-  P.expect token_Id.b_ident
-  res.proc_retT = P.tk.loc.From(P.src)
-  P.move(1)
-  P.indentation()
+  res.proc_retT = P.Proc_retT()
   # Get the body
   P.expect token_Id.sp_equal, token_Id.sp_semicolon
   if P.tk.id == token_Id.sp_equal:

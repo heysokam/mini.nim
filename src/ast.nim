@@ -11,6 +11,16 @@ import slate
 type Type * = object
   name  *:string
 
+
+#_______________________________________
+# @section AST: Value Data Types
+#_____________________________
+type Data * = object
+  name   *:string
+  typ    *:ast.Type
+  value  *:string
+
+
 #_______________________________________
 # @section AST: Expressions
 #_____________________________
@@ -36,6 +46,8 @@ type StatementList * = seq[ast.Statement]
 # @section AST: Procedures
 #_____________________________
 type Proc_Body * = ast.StatementList
+type Proc_Arg  * = ast.Data
+type Proc_Args * = seq[ast.Proc_Arg]
 
 
 #_______________________________________
@@ -48,8 +60,9 @@ type Node * = object
   public  *:bool= false
   case kind *:NodeKind
   of Proc :
-    proc_retT  *:string= "void"
-    proc_body  *:ast.Proc_Body
+    proc_args  *:ast.Proc_Args = @[]
+    proc_retT  *:ast.Type      = ast.Type(name: "void")
+    proc_body  *:ast.Proc_Body = @[]
   of Var  : discard
 #___________________
 type TopLevel * = seq[ast.Node]
