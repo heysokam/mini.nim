@@ -97,6 +97,9 @@ func statement *(P :var Par) :ast.Statement=
 # @section Parse: proc
 #_____________________________
 func Proc_body *(P :var Par) :ast.Proc_Body=
+  P.expect token_Id.sp_equal
+  P.move(1)
+  P.indentation()
   result.add P.statement()
 #_____________________________
 func Proc *(P :var Par) :void=
@@ -131,11 +134,13 @@ func Proc *(P :var Par) :void=
   res.proc_retT = P.tk.loc.From(P.src)
   P.move(1)
   P.indentation()
-  P.expect token_Id.sp_equal
-  P.move(1)
-  P.indentation()
   # Get the body
-  res.proc_body = P.Proc_body()
+  P.expect token_Id.sp_equal, token_Id.sp_semicolon
+  if P.tk.id == token_Id.sp_equal:
+    res.proc_body = P.Proc_body()
+  elif P.tk.id == token_Id.sp_semicolon:
+    P.move(1)
+    P.indentation()
   # Add the proc node to the AST
   P.ast.nodes.add res
 

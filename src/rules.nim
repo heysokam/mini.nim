@@ -17,6 +17,7 @@ type Id * = enum
   sp_bracket_L, # [
   sp_bracket_R, # ]
   sp_colon,     # :
+  sp_semicolon, # ;
   sp_equal,     # =
   # Operators
   op_star,      # *
