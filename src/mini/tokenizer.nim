@@ -8,12 +8,13 @@ import std/tables
 # @deps slate
 import slate
 # @deps mini.nim
-import./rules as mini
+import ./base
+import ./rules as mini
 
 #_______________________________________
 # @section Tokenizer: Types
 #_____________________________
-type Sz  * = uint
+type Sz  * = base.Sz
 type Pos * = slate.source.Pos
 
 type token_Id = mini.Id

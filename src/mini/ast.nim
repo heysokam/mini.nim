@@ -3,6 +3,8 @@
 #:_______________________________________________________________________
 # @deps slate
 import slate
+import ./base
+type Lang = base.Lang
 
 
 #_______________________________________
@@ -81,8 +83,6 @@ type TopLevel * = seq[ast.Node]
 #_______________________________________
 # @section AST: Data
 #_____________________________
-type Lang *{.pure.}= enum C, Zig
-#___________________
 type Ast * = object
   lang   *:ast.Lang= C
   nodes  *:ast.TopLevel= @[]
