@@ -7,9 +7,9 @@ from std/strutils  import `%`, join
 # @deps slate
 import slate
 # @deps mini.nim
-import ./tok
-import ./ast
 import ./rules as mini
+import ./tokenizer as tok
+import ./ast
 
 
 #_______________________________________
@@ -19,7 +19,7 @@ type Pos * = tok.Pos
 type token_Id = mini.Id
 #___________________
 type Par * = object
-  pos  *:par.Pos=  0
+  pos  *:parser.Pos=  0
   src  *:slate.source.Code= ""
   buf  *:tok.List= @[]
   ast  *:Ast
@@ -48,11 +48,11 @@ func create  *(_:typedesc[Par]; T :Tok) :Par=
   result.buf = T.res
   result.ast = Ast.default
 #___________________
-func pos_next *(P :Par, pos :par.Pos) :par.Pos {.inline.}=
+func pos_next *(P :Par, pos :parser.Pos) :parser.Pos {.inline.}=
   result = P.pos+pos
   if result >= P.buf.len.Sz: result = P.buf.len-1
 #___________________
-func next *(P :Par, pos :par.Pos) :Tk {.inline.}= P.buf[P.pos_next(pos)]
+func next *(P :Par, pos :parser.Pos) :Tk {.inline.}= P.buf[P.pos_next(pos)]
 #___________________
 func tk *(P :Par) :Tk {.inline.}= P.next(0)
 #___________________
@@ -69,7 +69,7 @@ func indentation *(P :var Par; list :varargs[token_Id]) :void=
 # @section Parser: Data Validation
 #_____________________________
 func expect *(P :Par; list :varargs[token_Id]) :void=
-  if P.tk.id notin list: par.fail UnexpectedTokenError, &"Found token `{P.tk}`, but expected one of {list}"
+  if P.tk.id notin list: parser.fail UnexpectedTokenError, &"Found token `{P.tk}`, but expected one of {list}"
 
 
 #_______________________________________
@@ -199,7 +199,7 @@ func process *(P :var Par) :void=
     case P.tk.id
     of token_Id.kw_proc : P.Proc()
     of token_Id.kw_var  : P.variable()
-    else                : par.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
+    else                : parser.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
     P.pos.inc
   discard
 

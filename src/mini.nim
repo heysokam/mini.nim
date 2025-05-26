@@ -6,8 +6,8 @@ from std/strutils import dedent
 # @deps slate
 import slate
 # @deps mini.nim
-import ./tok
-import ./par
+import ./tokenizer as tok
+import ./parser as par
 import ./ast
 type Tok = tok.Tok
 type Par = par.Par
@@ -36,19 +36,27 @@ func parse *(code :slate.source.Code) :Ast=
 #___________________
 proc parse *(file :string) :Ast=  mini.parse(code= file.readFile())
 
+
+#_______________________________________
+# @section Test Cases
+#_____________________________
+const Hello42    * = "proc main *() :int= return 42\n"
+const Hello42_C  * = "int main () { return 42; }\n"
+const HelloVar   * = "var hello = 42\n"  & Hello42
+const HelloVar_C * = "int hello = 42;\n" & Hello42_C
+
+
 #_______________________________________
 # @section Entry Point
 #_____________________________
 proc run=
-  let hello42 = mini.parse(code="proc main *() :int= return 42\n")
-  echo hello42
-  doAssert hello42.nodes.len == 1
+  let hello42_ast = mini.parse(code=Hello42)
+  echo hello42_ast
+  doAssert hello42_ast.nodes.len == 1
 
-  let helloVar = mini.parse(code="""
-    var hello = 42
-    proc main *() :int= return 42""".dedent())
-  echo helloVar
-  doAssert helloVar.nodes.len == 2
+  let helloVar_ast = mini.parse(code=HelloVar)
+  echo helloVar_ast
+  doAssert helloVar_ast.nodes.len == 2
 #___________________
 when isMainModule: run()
 

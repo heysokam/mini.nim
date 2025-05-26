@@ -22,10 +22,10 @@ type Tk * = object
   id   *:token_Id
   loc  *:slate.source.Loc
 type List * = seq[Tk]
-type token_List = tok.List
+type token_List = tokenizer.List
 
 type Tok * = object
-  pos  *:tok.Pos= 0
+  pos  *:tokenizer.Pos= 0
   buf  *:slate.lexer.List= @[]
   src  *:slate.source.Code= ""
   res  *:token_List= @[]
@@ -54,11 +54,11 @@ func create *(_:typedesc[Tok]; L :slate.Lex) :Tok=
   result.src = L.src
   result.buf = L.res
 #___________________
-func pos_next *(T :Tok, pos :tok.Pos) :tok.Pos {.inline.}=
+func pos_next *(T :Tok, pos :tokenizer.Pos) :tokenizer.Pos {.inline.}=
   result = T.pos+pos
   if result >= T.buf.len.Sz: result = T.buf.len-1
 #___________________
-func next *(T :Tok, pos :tok.Pos) :slate.Lx {.inline.}= T.buf[T.pos_next(pos)]
+func next *(T :Tok, pos :tokenizer.Pos) :slate.Lx {.inline.}= T.buf[T.pos_next(pos)]
 #___________________
 func lx *(T :Tok) :slate.Lx {.inline.}= T.next(0)
 #___________________
@@ -93,7 +93,7 @@ func paren *(T :var Tok) :void=
   of slate.lexer.Id.brace_R   : T.add sp_brace_R
   of slate.lexer.Id.bracket_L : T.add sp_bracket_L
   of slate.lexer.Id.bracket_R : T.add sp_bracket_R
-  else                        : tok.fail UnknownParenLexemeError, &"TODO: Tokenizing lexeme `{T.lx}` as a Parenthesis is incorrect."
+  else                        : tokenizer.fail UnknownParenLexemeError, &"Tokenizing lexeme `{T.lx}` as a Parenthesis is incorrect."
 
 #_______________________________________
 # @section Multi Lexemes
@@ -126,6 +126,6 @@ func process *(T :var Tok) :void=
        slate.lexer.Id.brace_R,
        slate.lexer.Id.bracket_L,
        slate.lexer.Id.bracket_R : T.paren()
-    else                        : tok.fail UnknownFirstLexemeError, &"TODO: Tokenizing lexeme `{T.lx}` not implemented."
+    else                        : tokenizer.fail UnknownFirstLexemeError, &"TODO: Tokenizing lexeme `{T.lx}` not implemented."
     T.pos.inc
 
