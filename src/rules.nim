@@ -10,6 +10,8 @@ type Id * = enum
   kw_var,       # var
   kw_return,    # return
   kw_include,   # include
+  kw_while,     # while
+  kw_array,     # array
   # Special Characters
   sp_paren_L,   # (
   sp_paren_R,   # )
@@ -22,12 +24,19 @@ type Id * = enum
   sp_equal,     # =
   # Operators
   op_star,      # *
+  op_minus,     # -
+  op_plus,      # +
+  op_equal,     # ==
+  op_notEqual,  # !=
   # Whitespace
   wht_space,    # ` `
 
 const Keywords * = {
-  "proc"   : kw_proc,
-  "var"    : kw_var,
-  "return" : kw_return,
+  "proc"    : kw_proc,
+  "var"     : kw_var,
+  "return"  : kw_return,
+  "include" : kw_include,
+  "while"   : kw_while,
+  "array"   : kw_array,
 }.toTable
 
