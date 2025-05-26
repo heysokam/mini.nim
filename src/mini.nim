@@ -7,10 +7,10 @@ from unittest import check
 # @deps slate
 import slate
 # @deps mini.nim
-import ./tokenizer as tok
-import ./parser as par
-import ./ast
-import ./codegen
+import ./mini/tokenizer as tok
+import ./mini/parser as par
+import ./mini/ast
+import ./mini/codegen
 type Tok = tok.Tok
 type Par = par.Par
 type Ast = ast.Ast
