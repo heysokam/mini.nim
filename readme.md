@@ -6,7 +6,7 @@
 ```md
 # Required
 - [x] Literal Value (int)
-- [ ] State (variables/assignment)
+- [x] State (variables/assignment)
 - [ ] Assignment and basic arithmetic (+ and -)
 - [ ] Operations to check conditions (== and !=)
 - [ ] Conditional Execution (if statements)

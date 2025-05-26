@@ -106,7 +106,7 @@ func gen_proc *(
   result.add " "
   # Args
   result.add "("
-  # FIX: Codegen Aguments
+  # FIX: Codegen Arguments
   result.add ")"
   result.add " "
   # Body
