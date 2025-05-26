@@ -1,8 +1,12 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
+# @deps slate
+import slate
 # @deps mini.nim
 import ../ast as mini
+import ./types
+type Module = types.Module
 
 type Keyword *{.pure.}= enum
   Static = "static",
@@ -18,7 +22,7 @@ func gen_literal *(
     expression : mini.Expression;
     statement  : mini.Statement;
     node       : mini.Node;
-  ) :string=
+  ) :slate.source.Code=
   result = expression.value
 #___________________
 func gen_expression *(
@@ -26,7 +30,7 @@ func gen_expression *(
     expression : mini.Expression;
     statement  : mini.Statement;
     node       : mini.Node;
-  ) :string= result = case expression.kind
+  ) :slate.source.Code= result = case expression.kind
   of Literal : ast.gen_literal(expression, statement, node)
 
 
@@ -37,7 +41,7 @@ func gen_return *(
     ast       : mini.Ast;
     statement : mini.Statement;
     node      : mini.Node;
-  ) :string=
+  ) :slate.source.Code=
   result.add $c.Keyword.Return
   result.add " "
   result.add ast.gen_expression(statement.value, statement, node)
@@ -47,7 +51,7 @@ func gen_statement *(
     ast       : mini.Ast;
     statement : mini.Statement;
     node      : mini.Node;
-  ) :string= result = case statement.kind
+  ) :slate.source.Code= result = case statement.kind
   of Return : ast.gen_return(statement, node)
 
 
@@ -57,22 +61,22 @@ func gen_statement *(
 func gen_var *(
     ast  : mini.Ast;
     node : mini.Node;
-  ) :string=
+  ) :c.Module=
   # Attributes
   if not node.public:
-    result.add $c.Keyword.Static
-    result.add " "
+    result.code.add $c.Keyword.Static
+    result.code.add " "
   # Type
-  result.add node.var_type.name
-  result.add " "
+  result.code.add node.var_type.name
+  result.code.add " "
   # Name
-  result.add node.name
+  result.code.add node.name
   # Value
   if node.var_value.value != "":
-    result.add " = "
-    result.add node.var_value.value
+    result.code.add " = "
+    result.code.add node.var_value.value
   # Terminate the Statement
-  result.add ";\n"
+  result.code.add ";\n"
 
 
 #_______________________________________
@@ -81,7 +85,7 @@ func gen_var *(
 func gen_proc_body *(
     ast  : mini.Ast;
     node : mini.Node;
-  ) :string=
+  ) :slate.source.Code=
   if node.proc_body.len == 0: return ";\n"
   result.add "{"
   if node.proc_body.len == 1 : result.add " "
@@ -93,25 +97,26 @@ func gen_proc_body *(
 func gen_proc *(
     ast  : mini.Ast;
     node : mini.Node;
-  ) :string=
+  ) :c.Module=
+  result = c.Module()
   # Attributes
   if not node.public:
-    result.add $c.Keyword.Static
-    result.add " "
+    result.code.add $c.Keyword.Static
+    result.code.add " "
   # Type
-  result.add node.proc_retT.name
-  result.add " "
+  result.code.add node.proc_retT.name
+  result.code.add " "
   # Name
-  result.add node.name
-  result.add " "
+  result.code.add node.name
+  result.code.add " "
   # Args
-  result.add "("
+  result.code.add "("
   # FIX: Codegen Arguments
-  result.add ")"
-  result.add " "
+  result.code.add ")"
+  result.code.add " "
   # Body
-  result.add ast.gen_proc_body(node)
-  result.add "\n"
+  result.code.add ast.gen_proc_body(node)
+  result.code.add "\n"
 
 
 #_______________________________________
@@ -119,7 +124,8 @@ func gen_proc *(
 #_____________________________
 func generate *(
     ast : mini.Ast;
-  ) :string=
+  ) :c.Module=
+  result = c.Module()
   for node in ast.nodes:
     case node.kind
     of Proc : result.add ast.gen_proc(node)

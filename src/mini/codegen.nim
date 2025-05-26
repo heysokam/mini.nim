@@ -1,16 +1,23 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
+# @deps slate
+import slate
+# @deps mini.nim
+from ./base import nil
 import ./ast as mini
+import ./codegen/types
 import ./codegen/c
 import ./codegen/zig
-const C = c.generate
-const Zig = zig.generate
+const C     = c.generate
+const Zig   = zig.generate
+type Module = types.Module
+type Lang   = base.Lang
 
 func generate *(
     ast  : mini.Ast;
-    lang : mini.Lang = ast.lang;
-  ) :string= result = case lang
-  of C   : codegen.C(ast)
-  of Zig : codegen.Zig(ast)
+    lang : codegen.Lang = ast.lang;
+  ) :codegen.Module= result = case lang
+  of Lang.C   : codegen.C(ast)
+  of Lang.Zig : codegen.Zig(ast)
 

@@ -3,9 +3,11 @@
 #:_______________________________________________________________________
 # @deps mini.nim
 import ../ast as mini
+import ./types
+type Module = types.Module
 
 func generate *(
     ast : mini.Ast;
-  ) :string=
-  result = "Zig Codegen is not implemented yet."
+  ) :zig.Module=
+  result.code = "Zig Codegen is not implemented yet."
 
