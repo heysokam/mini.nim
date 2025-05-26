@@ -42,6 +42,14 @@ type Statement * = object
 type StatementList * = seq[ast.Statement]
 
 
+
+#_______________________________________
+# @section AST: Variables
+#_____________________________
+type Var_value * = ast.Expression
+type Var_type  * = ast.Type
+
+
 #_______________________________________
 # @section AST: Procedures
 #_____________________________
@@ -59,11 +67,13 @@ type Node * = object
   name    *:string
   public  *:bool= false
   case kind *:NodeKind
-  of Proc :
+  of Proc:
     proc_args  *:ast.Proc_Args = @[]
     proc_retT  *:ast.Type      = ast.Type(name: "void")
     proc_body  *:ast.Proc_Body = @[]
-  of Var  : discard
+  of Var:
+    var_type   *:ast.Type
+    var_value  *:ast.Var_value
 #___________________
 type TopLevel * = seq[ast.Node]
 

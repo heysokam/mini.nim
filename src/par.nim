@@ -78,8 +78,6 @@ func expect *(P :Par; list :varargs[token_Id]) :void=
 func literal *(P :var Par) :ast.Expression=
   P.expect token_Id.b_number
   result.value = P.tk.loc.From(P.src)
-  P.move(1)
-  P.indentation()
 
 
 #_______________________________________
@@ -152,6 +150,45 @@ func Proc *(P :var Par) :void=
   # Add the proc node to the AST
   P.ast.nodes.add res
 
+#_______________________________________
+# @section Parse: var
+#_____________________________
+func Var_type *(P :var Par) :ast.Var_type=
+  result.name = "int"
+#___________________
+func Var_value *(P :var Par) :ast.Var_value=
+  P.expect token_Id.sp_equal
+  P.move(1)
+  P.indentation()
+  result = P.literal()
+#___________________
+func variable *(P :var Par) :void=
+  var res = ast.Node(kind: Var)
+  # Skip Keyword
+  P.expect token_Id.kw_var
+  P.move(1)
+  P.indentation()
+  # Get the name
+  P.expect token_Id.b_ident
+  res.name = P.tk.loc.From(P.src)
+  P.move(1)
+  P.indentation()
+  # Make public when marked with *
+  if P.tk.id == op_star:
+    res.public = true
+    P.move(1)
+    P.indentation()
+  # TODO: Get the Value Type
+  res.var_type = P.Var_type()
+  # Get the Value
+  P.expect token_Id.sp_equal, token_Id.sp_semicolon
+  if P.tk.id == token_Id.sp_equal:
+    res.var_value = P.Var_value()
+  elif P.tk.id == token_Id.sp_semicolon:
+    P.move(1)
+    P.indentation()
+  # Add the var node to the AST
+  P.ast.nodes.add res
 
 
 #_______________________________________
@@ -160,8 +197,9 @@ func Proc *(P :var Par) :void=
 func process *(P :var Par) :void=
   while P.pos < P.buf.len.Sz:
     case P.tk.id
-    of token_Id.kw_proc: P.Proc()
-    else : par.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
+    of token_Id.kw_proc : P.Proc()
+    of token_Id.kw_var  : P.variable()
+    else                : par.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
     P.pos.inc
   discard
 

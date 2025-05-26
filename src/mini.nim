@@ -1,6 +1,8 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
+# @deps std
+from std/strutils import dedent
 # @deps slate
 import slate
 # @deps mini.nim
@@ -26,19 +28,27 @@ func parse *(code :slate.source.Code) :Ast=
   # Parser
   var P = mini.Par.create(T)
   defer: P.destroy()
-  P.process()
+  debugEcho "_________________________________"
   debugEcho P.buf
+  P.process()
   # Return the resulting AST
   result = P.ast
-
+#___________________
+proc parse *(file :string) :Ast=  mini.parse(code= file.readFile())
 
 #_______________________________________
 # @section Entry Point
 #_____________________________
 proc run=
-  let hello42 = mini.parse("proc main *() :int= return 42\n")
+  let hello42 = mini.parse(code="proc main *() :int= return 42\n")
   echo hello42
   doAssert hello42.nodes.len == 1
+
+  let helloVar = mini.parse(code="""
+    var hello = 42
+    proc main *() :int= return 42""".dedent())
+  echo helloVar
+  doAssert helloVar.nodes.len == 2
 #___________________
 when isMainModule: run()
 

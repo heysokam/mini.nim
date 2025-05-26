@@ -9,6 +9,7 @@ type Id * = enum
   kw_proc,      # proc
   kw_var,       # var
   kw_return,    # return
+  kw_include,   # include
   # Special Characters
   sp_paren_L,   # (
   sp_paren_R,   # )
