@@ -3,12 +3,14 @@
 #:_______________________________________________________________________
 # @deps std
 from std/strutils import dedent
+from unittest import check
 # @deps slate
 import slate
 # @deps mini.nim
 import ./tokenizer as tok
 import ./parser as par
 import ./ast
+import ./codegen
 type Tok = tok.Tok
 type Par = par.Par
 type Ast = ast.Ast
@@ -43,7 +45,7 @@ proc parse *(file :string) :Ast=  mini.parse(code= file.readFile())
 const Hello42    * = "proc main *() :int= return 42\n"
 const Hello42_C  * = "int main () { return 42; }\n"
 const HelloVar   * = "var hello = 42\n"  & Hello42
-const HelloVar_C * = "int hello = 42;\n" & Hello42_C
+const HelloVar_C * = "static int hello = 42;\n" & Hello42_C
 
 
 #_______________________________________
@@ -52,11 +54,17 @@ const HelloVar_C * = "int hello = 42;\n" & Hello42_C
 proc run=
   let hello42_ast = mini.parse(code=Hello42)
   echo hello42_ast
-  doAssert hello42_ast.nodes.len == 1
+  check hello42_ast.nodes.len == 1
+  let hello42_C = hello42_ast.generate(C)
+  check hello42_C == Hello42_C
+  echo hello42_C
 
   let helloVar_ast = mini.parse(code=HelloVar)
   echo helloVar_ast
-  doAssert helloVar_ast.nodes.len == 2
+  check helloVar_ast.nodes.len == 2
+  let helloVar_C = helloVar_ast.generate(C)
+  check helloVar_C == HelloVar_C
+  echo helloVar_C
 #___________________
 when isMainModule: run()
 
