@@ -57,12 +57,32 @@ func gen_return *(
   result.add ast.gen_expression(statement.value, statement, node)
   result.add ";"
 #___________________
+func gen_variable *(
+    ast       : mini.Ast;
+    statement : mini.Statement;
+    node      : mini.Node;
+  ) :slate.source.Code=
+  result = " "
+  # Type
+  result.add statement.var_type.name
+  result.add " "
+  # Name
+  result.add statement.var_name
+  result.add " "
+  # Value
+  if statement.var_value.value != "":
+    result.add " = "
+    result.add statement.var_value.value
+  # Terminate the Statement
+  result.add ";\n"
+#___________________
 func gen_statement *(
     ast       : mini.Ast;
     statement : mini.Statement;
     node      : mini.Node;
   ) :slate.source.Code= result = case statement.kind
-  of Return : ast.gen_return(statement, node)
+  of Return   : ast.gen_return(statement, node)
+  of Variable : ast.gen_variable(statement, node)
 
 
 #_______________________________________

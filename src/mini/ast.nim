@@ -33,24 +33,29 @@ type Expression * = object
   case kind *:ast.ExpressionKind
   of Literal :  value *:string
 
-#_______________________________________
-# @section AST: Statements
-#_____________________________
-type StatementKind *{.pure.}= enum Return
-#___________________
-type Statement * = object
-  case kind *:ast.StatementKind
-  of Return :  value *:ast.Expression
-#___________________
-type StatementList * = seq[ast.Statement]
-
-
 
 #_______________________________________
 # @section AST: Variables
 #_____________________________
 type Var_value * = ast.Expression
 type Var_type  * = ast.Type
+
+
+#_______________________________________
+# @section AST: Statements
+#_____________________________
+type StatementKind *{.pure.}= enum Return, Variable
+#___________________
+type Statement * = object
+  case kind *:ast.StatementKind
+  of Return:
+    value  *:ast.Expression
+  of Variable:
+    var_name   *:string
+    var_type   *:ast.Type
+    var_value  *:ast.Var_value
+#___________________
+type StatementList * = seq[ast.Statement]
 
 
 #_______________________________________

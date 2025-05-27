@@ -27,9 +27,10 @@ type Par * = object
 #_______________________________________
 # @section Parser: Errors
 #_____________________________
-type ParserError               = object of CatchableError
-type UnknownToplevelTokenError = object of ParserError
-type UnexpectedTokenError      = object of ParserError
+type ParserError                = object of CatchableError
+type UnknownToplevelTokenError  = object of ParserError
+type UnexpectedTokenError       = object of ParserError
+type UnknownStatementTokenError = object of ParserError
 #___________________
 template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
   ## @descr
@@ -85,12 +86,25 @@ func literal *(P :var Par) :ast.Expression=
 #_______________________________________
 # @section Parse: Statements
 #_____________________________
-func statement *(P :var Par) :ast.Statement=
+func statement_return *(P :var Par) :ast.Statement=
   P.expect token_Id.kw_return
   P.move(1)
   P.indentation()
   result = ast.Statement(kind: Return)
   result.value = P.literal()
+#___________________
+func statement_variable *(P :var Par) :ast.Statement=
+  P.expect token_Id.kw_var
+  P.move(1)
+  P.indentation()
+  result = ast.Statement(kind: Variable)
+#___________________
+func statement *(P :var Par) :ast.Statement=
+  P.expect token_Id.kw_return, token_Id.kw_var
+  result = case P.tk.id
+  of kw_return : P.statement_return()
+  of kw_var    : P.statement_variable()
+  else         : parser.fail UnknownStatementTokenError, &"Parsing token `{P.tk}` as a statement is not implemented."; ast.Statement()
 
 
 #_______________________________________
