@@ -31,7 +31,8 @@ type ExpressionKind *{.pure.}= enum Literal
 #___________________
 type Expression * = object
   case kind *:ast.ExpressionKind
-  of Literal :  value *:string
+  of Literal:
+    lit_value *:string
 
 
 #_______________________________________
@@ -49,7 +50,7 @@ type StatementKind *{.pure.}= enum Return, Variable
 type Statement * = object
   case kind *:ast.StatementKind
   of Return:
-    value  *:ast.Expression
+    ret_value  *:ast.Expression
   of Variable:
     var_name   *:string
     var_type   *:ast.Type

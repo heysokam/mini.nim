@@ -18,8 +18,6 @@ type Module * = object
   code    *:slate.source.Code
 #___________________
 func add *(A :var Module; B :Module) :var Module {.discardable.}=
-  # ?? dir  ??
-  # ?? name ??
   doAssert A.lang == B.lang, &"Tried to add one code Module to another, but their languages are different:\n  {A}\n  {B}"
   A.header = A.header & B.header
   A.code   = A.code & B.code

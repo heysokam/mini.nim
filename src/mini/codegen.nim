@@ -15,7 +15,10 @@ type Lang   = base.Lang
 func generate *(
     ast  : mini.Ast;
     lang : codegen.Lang = ast.lang;
-  ) :codegen.Module= result = case lang
-  of Lang.C   : codegen.C(ast)
-  of Lang.Zig : codegen.Zig(ast)
+    dir  : string       = ".";
+    name : string       = "entry";
+  ) :codegen.Module=
+  result = case lang
+  of Lang.C   : codegen.C(ast, dir, name)
+  of Lang.Zig : codegen.Zig(ast, dir, name)
 

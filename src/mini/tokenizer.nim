@@ -71,10 +71,11 @@ func add *(T :var Tok; id :mini.Id) :void {.inline.}= T.add id, T.lx.loc
 #_______________________________________
 # @section Single Lexemes: Singles
 #_____________________________
-func number *(T :var Tok) :void=  T.add b_number
-func star   *(T :var Tok) :void=  T.add op_star
-func colon  *(T :var Tok) :void=  T.add sp_colon
-func equal  *(T :var Tok) :void=  T.add sp_equal
+func number  *(T :var Tok) :void=  T.add b_number
+func star    *(T :var Tok) :void=  T.add op_star
+func colon   *(T :var Tok) :void=  T.add sp_colon
+func equal   *(T :var Tok) :void=  T.add sp_equal
+func newline *(T :var Tok) :void=  T.add wht_newline
 #___________________
 func keyword *(T :var Tok) :void=
   let kw = T.lx.loc.From(T.src)
@@ -117,6 +118,7 @@ func process *(T :var Tok) :void=
   while T.pos < T.buf.len.Sz:
     case T.lx.id
     of slate.lexer.Id.space     : T.space()
+    of slate.lexer.Id.newline   : T.newline()
     of slate.lexer.Id.ident     : T.ident()
     of slate.lexer.Id.number    : T.number()
     of slate.lexer.Id.star      : T.star()

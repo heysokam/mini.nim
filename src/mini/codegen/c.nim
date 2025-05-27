@@ -32,7 +32,7 @@ func gen_literal *(
     statement  : mini.Statement;
     node       : mini.Node;
   ) :slate.source.Code=
-  result = expression.value
+  result = expression.lit_value
 #___________________
 func gen_expression *(
     ast        : mini.Ast;
@@ -54,7 +54,7 @@ func gen_return *(
   result = ""
   result.add $c.Keyword.Return
   result.add " "
-  result.add ast.gen_expression(statement.value, statement, node)
+  result.add ast.gen_expression(statement.ret_value, statement, node)
   result.add ";"
 #___________________
 func gen_variable *(
@@ -70,9 +70,10 @@ func gen_variable *(
   result.add statement.var_name
   result.add " "
   # Value
-  if statement.var_value.value != "":
+  let value = statement.var_value.lit_value # FIX: Codegen expression
+  if value != "":
     result.add " = "
-    result.add statement.var_value.value
+    result.add value
   # Terminate the Statement
   result.add ";\n"
 #___________________
@@ -105,9 +106,10 @@ func gen_var *(
   # Declaration
   if node.public: result.header.add &"extern {result.code};\n"
   # Value
-  if node.var_value.value != "":
+  let value = node.var_value.lit_value # FIX: Codegen expression
+  if value != "":
     result.code.add " = "
-    result.code.add node.var_value.value
+    result.code.add value
   # Terminate the Statement
   result.code.add ";\n"
 
@@ -159,11 +161,14 @@ func gen_proc *(
 # @section Codegen: C Entry Point
 #_____________________________
 func generate *(
-    ast : mini.Ast;
+    ast  : mini.Ast;
+    dir  : string = ".";
+    name : string = "entry";
   ) :c.Module=
   result = c.Module(
-    lang   : ast.lang,
-    name   : "entry",)
+    lang : ast.lang,
+    dir  : dir,
+    name : name,)
   result.header = fmt c.Templ_H
   result.code   = fmt c.Templ_C
   for node in ast.nodes:

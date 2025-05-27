@@ -80,7 +80,10 @@ func expect *(P :Par; list :varargs[token_Id]) :void=
 func literal *(P :var Par) :ast.Expression=
   result = ast.Expression(kind: Literal)
   P.expect token_Id.b_number
-  result.value = P.tk.loc.From(P.src)
+  result.lit_value = P.tk.loc.From(P.src)
+#_____________________________
+func expression *(P :var Par) :ast.Expression=
+  result = P.literal()
 
 
 #_______________________________________
@@ -91,13 +94,25 @@ func statement_return *(P :var Par) :ast.Statement=
   P.move(1)
   P.indentation()
   result = ast.Statement(kind: Return)
-  result.value = P.literal()
+  result.ret_value = P.expression()
 #___________________
 func statement_variable *(P :var Par) :ast.Statement=
   P.expect token_Id.kw_var
   P.move(1)
   P.indentation()
   result = ast.Statement(kind: Variable)
+  # Name
+  P.expect token_Id.b_ident
+  result.var_name = P.tk.loc.From(P.src)
+  P.move(1)
+  P.indentation()
+  # Type
+  # FIX: Parse Type
+  # Value
+  P.expect token_Id.sp_equal, token_Id.sp_semicolon
+  P.move(1)
+  P.indentation()
+  result.var_value = P.expression()
 #___________________
 func statement *(P :var Par) :ast.Statement=
   P.expect token_Id.kw_return, token_Id.kw_var
@@ -125,7 +140,16 @@ func Proc_body *(P :var Par) :ast.Proc_Body=
   P.expect token_Id.sp_equal
   P.move(1)
   P.indentation()
-  result.add P.statement()
+  # Might have a newline at the start of the body
+  if P.tk.id == token_Id.wht_newline:
+    P.move(1)
+    P.indentation()
+  # End each statement with a newline
+  while P.tk.id != token_Id.wht_newline:
+    P.indentation()
+    result.add P.statement()
+    P.move(1)
+    P.indentation()
 #_____________________________
 func Proc_retT *(P :var Par) :ast.Type=
   result = ast.Type()
@@ -204,9 +228,13 @@ func variable *(P :var Par) :void=
   P.expect token_Id.sp_equal, token_Id.sp_semicolon
   if P.tk.id == token_Id.sp_equal:
     res.var_value = P.Var_value()
+    P.move(1)
   elif P.tk.id == token_Id.sp_semicolon:
     P.move(1)
     P.indentation()
+  # Expect a newline at the end of the statement
+  P.expect token_Id.wht_newline
+  P.move(1)
   # Add the var node to the AST
   P.ast.nodes.add res
 
@@ -217,9 +245,9 @@ func variable *(P :var Par) :void=
 func process *(P :var Par) :void=
   while P.pos < P.buf.len.Sz:
     case P.tk.id
-    of token_Id.kw_proc : P.Proc()
-    of token_Id.kw_var  : P.variable()
-    else                : parser.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
+    of token_Id.kw_proc   : P.Proc()
+    of token_Id.kw_var    : P.variable()
+    else                  : parser.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
     P.pos.inc
   discard
 

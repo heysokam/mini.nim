@@ -4,6 +4,7 @@
 import std/tables
 
 type Id * = enum
+  none,
   b_ident, b_number,
   # Keywords
   kw_proc,      # proc
@@ -29,7 +30,8 @@ type Id * = enum
   op_equal,     # ==
   op_notEqual,  # !=
   # Whitespace
-  wht_space,    # ` `
+  wht_space,    # ` ` \t
+  wht_newline   # \n \r
 
 const Keywords * = {
   "proc"    : kw_proc,
