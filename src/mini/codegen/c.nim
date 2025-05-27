@@ -143,8 +143,7 @@ func generate *(
   ) :c.Module=
   result = c.Module(
     lang   : ast.lang,
-    name   : "entry",
-    )
+    name   : "entry",)
   result.header = fmt c.Templ_H
   result.code   = fmt c.Templ_C
   for node in ast.nodes:

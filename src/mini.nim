@@ -59,7 +59,7 @@ proc run=
   check hello42_ast.nodes.len == 1
   let hello42_C = hello42_ast.generate(C)
   check hello42_C.code == Hello42_C
-  cc.compile(hello42_C, hello42_ast.lang)
+  cc.run(hello42_C, hello42_ast.lang)
 
   let helloVar_ast = mini.parse(code=HelloVar)
   echo "_________________________________"
@@ -67,7 +67,7 @@ proc run=
   check helloVar_ast.nodes.len == 2
   let helloVar_C = helloVar_ast.generate(C)
   check helloVar_C.code == HelloVar_C
-  cc.compile(helloVar_C, helloVar_ast.lang)
+  cc.run(helloVar_C, helloVar_ast.lang)
 #___________________
 when isMainModule: run()
 
