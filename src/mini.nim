@@ -1,8 +1,6 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
-# @deps std
-from unittest import check
 # @deps slate
 import slate
 # @deps mini.nim
@@ -15,6 +13,16 @@ from ./mini/compile as cc import nil
 type Tok = tok.Tok
 type Par = par.Par
 type Ast = ast.Ast
+
+#_______________________________________
+# @section API: Compiler as a Library
+#_____________________________
+export base
+export cc
+export mini.Tok
+export mini.Par
+export mini.Ast
+export codegen
 
 #_______________________________________
 # @section Parser: Entry Point
@@ -36,38 +44,4 @@ func parse *(code :slate.source.Code) :Ast=
   result = P.ast
 #___________________
 proc parse *(file :string) :Ast=  mini.parse(code= file.readFile())
-
-
-#_______________________________________
-# @section Test Cases
-#_____________________________
-const Hello42    * = "proc main *() :int= return 42\n"
-const Include_C  * = "#include \"./entry.h\"\n"
-const Main_C     * = "int main () { return 42; }\n"
-const Hello42_C  * = Include_C & Main_C
-const HelloVar   * = "var hello * = 42\n" & Hello42
-const HelloVar_C * = Include_C & "int hello = 42;\n" & Main_C
-
-
-#_______________________________________
-# @section Entry Point
-#_____________________________
-proc run=
-  let hello42_ast = mini.parse(code=Hello42)
-  echo "_________________________________"
-  echo hello42_ast
-  check hello42_ast.nodes.len == 1
-  let hello42_C = hello42_ast.generate(C)
-  check hello42_C.code == Hello42_C
-  cc.run(hello42_C, hello42_ast.lang)
-
-  let helloVar_ast = mini.parse(code=HelloVar)
-  echo "_________________________________"
-  echo helloVar_ast
-  check helloVar_ast.nodes.len == 2
-  let helloVar_C = helloVar_ast.generate(C)
-  check helloVar_C.code == HelloVar_C
-  cc.run(helloVar_C, helloVar_ast.lang)
-#___________________
-when isMainModule: run()
 
