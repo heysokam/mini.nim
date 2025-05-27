@@ -2,7 +2,6 @@
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
 # @deps std
-from std/strutils import dedent
 from unittest import check
 # @deps slate
 import slate

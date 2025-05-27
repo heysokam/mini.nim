@@ -10,5 +10,6 @@ from ../codegen/types as codegen import nil
 func compile *(
     code : codegen.Module;
   ) :string {.discardable.}=
+  result = ""
   debugEcho code
 

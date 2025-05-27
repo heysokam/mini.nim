@@ -1,14 +1,12 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
-# @deps slate
-import slate
 # @deps mini.nim
 from ./base import nil
 import ./ast as mini
-import ./codegen/types
-import ./codegen/c
-import ./codegen/zig
+from ./codegen/types import nil
+from ./codegen/c import nil
+from ./codegen/zig import nil
 const C     = c.generate
 const Zig   = zig.generate
 type Module = types.Module

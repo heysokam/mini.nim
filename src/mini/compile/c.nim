@@ -5,7 +5,7 @@
 from std/oids import genOid, `$`
 from std/os import addFileExt, `/`, getCurrentDir
 # @deps ndk
-import slate
+# import slate
 from nstd/shell import md
 import ./confy
 # @deps mini.nim
@@ -36,6 +36,7 @@ proc builder *(
 proc compile *(
     module : codegen.Module;
   ) :string {.discardable.}=
+  result = ""
   # Create the temporary file
   let id = $genOid()
   let rootDir = "."/"bin"/".cache"/"mini"/id

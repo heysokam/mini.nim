@@ -52,6 +52,7 @@ template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
 #_____________________________
 func destroy *(T :var Tok) :void= T = Tok()
 func create *(_:typedesc[Tok]; L :slate.Lex) :Tok=
+  result = Tok()
   result.src = L.src
   result.buf = L.res
 #___________________

@@ -2,7 +2,8 @@
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
 # @deps slate
-import slate
+# import slate
+# @deps mini.nim
 import ./base
 type Lang = base.Lang
 

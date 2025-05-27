@@ -5,7 +5,7 @@
 import slate
 # @deps mini.nim
 import ../ast as mini
-import ./types
+from ./types import add
 type Module = types.Module
 
 type Keyword *{.pure.}= enum
@@ -42,6 +42,7 @@ func gen_return *(
     statement : mini.Statement;
     node      : mini.Node;
   ) :slate.source.Code=
+  result = ""
   result.add $c.Keyword.Return
   result.add " "
   result.add ast.gen_expression(statement.value, statement, node)
@@ -62,6 +63,7 @@ func gen_var *(
     ast  : mini.Ast;
     node : mini.Node;
   ) :c.Module=
+  result = c.Module()
   # Attributes
   if not node.public:
     result.code.add $c.Keyword.Static
@@ -86,6 +88,7 @@ func gen_proc_body *(
     ast  : mini.Ast;
     node : mini.Node;
   ) :slate.source.Code=
+  result = ""
   if node.proc_body.len == 0: return ";\n"
   result.add "{"
   if node.proc_body.len == 1 : result.add " "

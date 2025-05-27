@@ -9,5 +9,6 @@ type Module = types.Module
 func generate *(
     ast : mini.Ast;
   ) :zig.Module=
+  result = zig.Module()
   result.code = "Zig Codegen is not implemented yet."
 

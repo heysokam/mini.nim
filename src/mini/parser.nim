@@ -44,6 +44,7 @@ template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
 #_____________________________
 func destroy *(P :var Par) :void= P = Par.default
 func create  *(_:typedesc[Par]; T :Tok) :Par=
+  result = Par()
   result.src = T.src
   result.buf = T.res
   result.ast = Ast.default
@@ -76,6 +77,7 @@ func expect *(P :Par; list :varargs[token_Id]) :void=
 # @section Parse: Expressions
 #_____________________________
 func literal *(P :var Par) :ast.Expression=
+  result = ast.Expression(kind: Literal)
   P.expect token_Id.b_number
   result.value = P.tk.loc.From(P.src)
 
@@ -95,6 +97,7 @@ func statement *(P :var Par) :ast.Statement=
 # @section Parse: proc
 #_____________________________
 func Proc_args *(P :var Par) :ast.Proc_Args=
+  result = @[]
   P.expect token_Id.sp_paren_L
   P.move(1)
   P.indentation()
@@ -104,12 +107,14 @@ func Proc_args *(P :var Par) :ast.Proc_Args=
   P.indentation()
 #_____________________________
 func Proc_body *(P :var Par) :ast.Proc_Body=
+  result = @[]
   P.expect token_Id.sp_equal
   P.move(1)
   P.indentation()
   result.add P.statement()
 #_____________________________
 func Proc_retT *(P :var Par) :ast.Type=
+  result = ast.Type()
   P.expect token_Id.sp_colon
   P.move(1)
   P.indentation()
@@ -154,6 +159,7 @@ func Proc *(P :var Par) :void=
 # @section Parse: var
 #_____________________________
 func Var_type *(P :var Par) :ast.Var_type=
+  result = ast.Var_type()
   result.name = "int"
 #___________________
 func Var_value *(P :var Par) :ast.Var_value=
