@@ -1,6 +1,8 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
+# @deps std
+from std/strformat import `&`, fmt
 # @deps slate
 import slate
 # @deps mini.nim
@@ -13,6 +15,13 @@ type Keyword *{.pure.}= enum
   Return = "return",
   While  = "while",
 
+const MainNames * = @["main", "WinMain"]
+const Templ_H * = """
+#pragma once
+"""
+const Templ_C * = """
+#include "./{result.name}.h"
+"""
 
 #_______________________________________
 # @section Codegen: Expressions
@@ -63,7 +72,7 @@ func gen_var *(
     ast  : mini.Ast;
     node : mini.Node;
   ) :c.Module=
-  result = c.Module()
+  result = c.Module(lang: ast.lang)
   # Attributes
   if not node.public:
     result.code.add $c.Keyword.Static
@@ -73,6 +82,8 @@ func gen_var *(
   result.code.add " "
   # Name
   result.code.add node.name
+  # Declaration
+  if node.public: result.header.add &"extern {result.code};\n"
   # Value
   if node.var_value.value != "":
     result.code.add " = "
@@ -90,18 +101,20 @@ func gen_proc_body *(
   ) :slate.source.Code=
   result = ""
   if node.proc_body.len == 0: return ";\n"
+  result.add " "
   result.add "{"
   if node.proc_body.len == 1 : result.add " "
   else                       : result.add "\n  "
   for statement in node.proc_body: result.add ast.gen_statement(statement, node)
   if node.proc_body.len == 1: result.add " "
   result.add "}"
+  result.add "\n"
 #___________________
 func gen_proc *(
     ast  : mini.Ast;
     node : mini.Node;
   ) :c.Module=
-  result = c.Module()
+  result = c.Module(lang: ast.lang)
   # Attributes
   if not node.public:
     result.code.add $c.Keyword.Static
@@ -116,10 +129,10 @@ func gen_proc *(
   result.code.add "("
   # FIX: Codegen Arguments
   result.code.add ")"
-  result.code.add " "
+  # Declaration
+  if node.name notin c.MainNames and node.public: result.header.add result.code & ";\n"
   # Body
   result.code.add ast.gen_proc_body(node)
-  result.code.add "\n"
 
 
 #_______________________________________
@@ -128,7 +141,12 @@ func gen_proc *(
 func generate *(
     ast : mini.Ast;
   ) :c.Module=
-  result = c.Module()
+  result = c.Module(
+    lang   : ast.lang,
+    name   : "entry",
+    )
+  result.header = fmt c.Templ_H
+  result.code   = fmt c.Templ_C
   for node in ast.nodes:
     case node.kind
     of Proc : result.add ast.gen_proc(node)

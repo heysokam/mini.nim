@@ -42,9 +42,11 @@ proc parse *(file :string) :Ast=  mini.parse(code= file.readFile())
 # @section Test Cases
 #_____________________________
 const Hello42    * = "proc main *() :int= return 42\n"
-const Hello42_C  * = "int main () { return 42; }\n"
-const HelloVar   * = "var hello * = 42\n"  & Hello42
-const HelloVar_C * = "int hello = 42;\n" & Hello42_C
+const Include_C  * = "#include \"./entry.h\"\n"
+const Main_C     * = "int main () { return 42; }\n"
+const Hello42_C  * = Include_C & Main_C
+const HelloVar   * = "var hello * = 42\n" & Hello42
+const HelloVar_C * = Include_C & "int hello = 42;\n" & Main_C
 
 
 #_______________________________________

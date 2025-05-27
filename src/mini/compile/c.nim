@@ -36,18 +36,20 @@ proc builder *(
 proc compile *(
     module : codegen.Module;
   ) :string {.discardable.}=
-  result = ""
   # Create the temporary file
   let id = $genOid()
   let rootDir = "."/"bin"/".cache"/"mini"/id
   let srcDir  = rootDir/"src"
   let binDir  = rootDir/"bin"
-  let file    = "entry.c"
+  let file_c  = "entry.c"
+  let file_h  = "entry.h"
   md rootDir
   md srcDir
   md binDir
-  system.writeFile(srcDir/file, module.code)
+  system.writeFile(srcDir/file_h, module.header)
+  system.writeFile(srcDir/file_c, module.code)
   # Build the target with confy
-  let target = c.builder(file, rootDir, srcDir, binDir).build.run
+  let target = c.builder(file_c, rootDir, srcDir, binDir).build.run
+  result = target.binary()
   debugEcho module
 
