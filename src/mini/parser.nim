@@ -63,7 +63,12 @@ func move *(P :var Par; pos :source.Pos) :void {.inline.}= P.pos = P.pos_next(po
 func skip *(P :var Par; list :varargs[token_Id]) :void=
   while P.tk.id in list: P.move(1)
 #___________________
+func newline *(P :var Par) :void=
+  # TODO: Shouldn't ignore empty newlines. They matter for meaningful indentation
+  P.skip wht_newline
+#___________________
 func indentation *(P :var Par; list :varargs[token_Id]) :void=
+  # TODO: Meaningful indentation
   P.skip wht_space
 
 
@@ -238,16 +243,16 @@ func variable *(P :var Par) :void=
   # Add the var node to the AST
   P.ast.nodes.add res
 
-
 #_______________________________________
 # @section Parser: Entry Point
 #_____________________________
 func process *(P :var Par) :void=
   while P.pos < P.buf.len.Sz:
     case P.tk.id
-    of token_Id.kw_proc   : P.Proc()
-    of token_Id.kw_var    : P.variable()
-    else                  : parser.fail UnknownToplevelTokenError, &"Parsing token `{P.tk}` at the Toplevel is not implemented."
+    of token_Id.kw_proc     : P.Proc()
+    of token_Id.kw_var      : P.variable()
+    of token_Id.wht_newline : P.newline()
+    else                    : parser.fail UnknownToplevelTokenError, &"Parsing token `{P.tk.id}` at the Toplevel is not implemented.\n\n Token: {P.tk}\n Lexemes:\n  {P.buf}\n\n Source:\n`{P.src}`"
     P.pos.inc
   discard
 
