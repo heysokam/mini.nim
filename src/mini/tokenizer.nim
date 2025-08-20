@@ -22,14 +22,20 @@ type token_Id = mini.Id
 type Tk * = object
   id   *:token_Id
   loc  *:slate.source.Loc
+  ind  *:slate.depth.Level
 type List * = seq[Tk]
 type token_List = tokenizer.List
 
+type Depth * = object
+  lvl  *:slate.depth.Level= 0 ## Current indentation level to assign to tokens.
+  chg  *:bool= off            ## Should we update depth_level (are we in a newline)
+
 type Tok * = object
-  pos  *:tokenizer.Pos= 0
-  buf  *:slate.lexer.List= @[]
-  src  *:slate.source.Code= ""
-  res  *:token_List= @[]
+  pos    *:tokenizer.Pos= 0
+  buf    *:slate.lexer.List= @[]
+  src    *:slate.source.Code= ""
+  res    *:token_List= @[]
+  depth  *:tokenizer.Depth
 
 #_______________________________________
 # @section Tokenizer: Errors
@@ -64,7 +70,7 @@ func next *(T :Tok, pos :tokenizer.Pos) :slate.Lx {.inline.}= T.buf[T.pos_next(p
 #___________________
 func lx *(T :Tok) :slate.Lx {.inline.}= T.next(0)
 #___________________
-func add *(T :var Tok; id :mini.Id; loc :source.Loc) :void {.inline.}= T.res.add Tk(id: id, loc: loc)
+func add *(T :var Tok; id :mini.Id; loc :source.Loc) :void {.inline.}= T.res.add Tk(id: id, loc: loc, ind: T.depth.lvl)
 func add *(T :var Tok; id :mini.Id) :void {.inline.}= T.add id, T.lx.loc
 
 
@@ -75,7 +81,10 @@ func number  *(T :var Tok) :void=  T.add b_number
 func star    *(T :var Tok) :void=  T.add op_star
 func colon   *(T :var Tok) :void=  T.add sp_colon
 func equal   *(T :var Tok) :void=  T.add sp_equal
-func newline *(T :var Tok) :void=  T.add wht_newline
+func newline *(T :var Tok) :void=
+  T.add wht_newline
+  T.depth.chg = on
+  T.depth.lvl = 0
 #___________________
 func keyword *(T :var Tok) :void=
   let kw = T.lx.loc.From(T.src)
@@ -108,7 +117,14 @@ func space *(T :var Tok) :void=
     if T.lx.id != slate.lexer.Id.space: T.pos.dec; break
     loc.add T.lx.loc
     T.pos.inc
+    #_____________________________
+    # @note
+    # First whitespace in a line should be indent 0, not 1.
+    # Couldn't figure out the logic to achieve that
+    if T.depth.chg: T.depth.lvl.inc
+    #_____________________________
   T.add wht_space, loc
+  if T.depth.chg: T.depth.chg = off
 
 
 #_______________________________________

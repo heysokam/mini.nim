@@ -262,5 +262,4 @@ func process *(P :var Par) :void=
     of token_Id.wht_newline : P.newline()
     else                    : P.error_toplevel()
     P.pos.inc
-  discard
 
