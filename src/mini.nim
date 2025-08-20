@@ -10,17 +10,19 @@ import ./mini/parser as par
 import ./mini/ast
 import ./mini/codegen
 from ./mini/compile as cc import nil
-type Tok = tok.Tok
-type Par = par.Par
-type Ast = ast.Ast
+type Lexer     = slate.Lex
+type Tokenizer = tok.Tokenizer
+type Parser    = par.Parser
+type Ast       = ast.Ast
 
 #_______________________________________
 # @section API: Compiler as a Library
 #_____________________________
 export base
 export cc
-export mini.Tok
-export mini.Par
+export mini.Lexer
+export mini.Tokenizer
+export mini.Parser
 export mini.Ast
 export codegen
 
@@ -29,15 +31,15 @@ export codegen
 #_____________________________
 func parse *(code :slate.source.Code) :Ast=
   # Lexer
-  var L = slate.Lex.create(code)
+  var L = mini.Lexer.create(code)
   defer: L.destroy()
   L.process()
   # Tokenizer
-  var T = mini.Tok.create(L)
+  var T = mini.Tokenizer.create(L)
   defer: T.destroy()
   T.process()
   # Parser
-  var P = mini.Par.create(T)
+  var P = mini.Parser.create(T)
   defer: P.destroy()
   P.process()
   # Return the resulting AST

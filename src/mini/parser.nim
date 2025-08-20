@@ -18,7 +18,7 @@ import ./ast
 type Pos * = tok.Pos
 type token_Id = mini.Id
 #___________________
-type Par * = object
+type Parser * = object
   pos  *:parser.Pos=  0
   src  *:slate.source.Code= ""
   buf  *:tok.List= @[]
@@ -40,7 +40,7 @@ template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
   const info = "$#($#,$#): " % [inst.fileName, $inst.line, $inst.column]
   {.cast(noSideEffect).}: raise newException(Err, info & "\n " & msg.join(" "))
 #___________________
-template error_toplevel (P :var Par)=
+template error_toplevel (P :var Parser)=
   P.src.insert("⭸", P.tk.loc.start.Natural)
   parser.fail UnknownToplevelTokenError,
     &"Parsing token `{P.tk.id}` at the Toplevel is not implemented.\n\n Token: {P.tk}\n Lexemes:\n  {P.buf}\n\n Source:\n`{P.src}`"
@@ -49,32 +49,32 @@ template error_toplevel (P :var Par)=
 #_______________________________________
 # @section Parser: Data Management
 #_____________________________
-func destroy *(P :var Par) :void= P = Par.default
-func create  *(_:typedesc[Par]; T :Tok) :Par=
-  result = Par()
+func destroy *(P :var Parser) :void= P = Parser.default
+func create  *(_:typedesc[Parser]; T :Tokenizer) :Parser=
+  result = Parser()
   result.src = T.src
   result.buf = T.res
   result.ast = Ast.default
 #___________________
-func pos_next *(P :Par, pos :parser.Pos) :parser.Pos {.inline.}=
+func pos_next *(P :Parser, pos :parser.Pos) :parser.Pos {.inline.}=
   result = P.pos+pos
   if result >= P.buf.len.Sz: result = P.buf.len-1
 #___________________
-func next *(P :Par, pos :parser.Pos) :Tk {.inline.}= P.buf[P.pos_next(pos)]
+func next *(P :Parser, pos :parser.Pos) :Token {.inline.}= P.buf[P.pos_next(pos)]
 #___________________
-func tk *(P :Par) :Tk {.inline.}= P.next(0)
+func tk *(P :Parser) :Token {.inline.}= P.next(0)
 #___________________
-func move *(P :var Par; pos :source.Pos) :void {.inline.}= P.pos = P.pos_next(pos)
+func move *(P :var Parser; pos :source.Pos) :void {.inline.}= P.pos = P.pos_next(pos)
 #___________________
-func skip *(P :var Par; list :varargs[token_Id]) :void=
+func skip *(P :var Parser; list :varargs[token_Id]) :void=
   while P.tk.id in list: P.move(1)
 #___________________
-func newline *(P :var Par) :void=
+func newline *(P :var Parser) :void=
   # TODO: Shouldn't ignore empty newlines. They matter for meaningful indentation
   # P.skip wht_newline
   P.move(1)
 #___________________
-func indentation *(P :var Par; list :varargs[token_Id]) :void=
+func indentation *(P :var Parser; list :varargs[token_Id]) :void=
   # TODO: Meaningful indentation
   P.skip wht_space
 
@@ -82,33 +82,33 @@ func indentation *(P :var Par; list :varargs[token_Id]) :void=
 #_______________________________________
 # @section Parser: Data Validation
 #_____________________________
-func expect *(P :Par; list :varargs[token_Id]) :void=
+func expect *(P :Parser; list :varargs[token_Id]) :void=
   if P.tk.id notin list: parser.fail UnexpectedTokenError, &"Found token `{P.tk}`, but expected one of {list}"
 
 
 #_______________________________________
 # @section Parse: Expressions
 #_____________________________
-func literal *(P :var Par) :ast.Expression=
+func literal *(P :var Parser) :ast.Expression=
   result = ast.Expression(kind: Literal)
   P.expect token_Id.b_number
   result.lit_value = P.tk.loc.From(P.src)
 #_____________________________
-func expression *(P :var Par) :ast.Expression=
+func expression *(P :var Parser) :ast.Expression=
   result = P.literal()
 
 
 #_______________________________________
 # @section Parse: Statements
 #_____________________________
-func statement_return *(P :var Par) :ast.Statement=
+func statement_return *(P :var Parser) :ast.Statement=
   P.expect token_Id.kw_return
   P.move(1)
   P.indentation()
   result = ast.Statement(kind: Return)
   result.ret_value = P.expression()
 #___________________
-func statement_variable *(P :var Par) :ast.Statement=
+func statement_variable *(P :var Parser) :ast.Statement=
   P.expect token_Id.kw_var
   P.move(1)
   P.indentation()
@@ -126,7 +126,7 @@ func statement_variable *(P :var Par) :ast.Statement=
   P.indentation()
   result.var_value = P.expression()
 #___________________
-func statement *(P :var Par) :ast.Statement=
+func statement *(P :var Parser) :ast.Statement=
   P.expect token_Id.kw_return, token_Id.kw_var
   result = case P.tk.id
   of kw_return : P.statement_return()
@@ -137,7 +137,7 @@ func statement *(P :var Par) :ast.Statement=
 #_______________________________________
 # @section Parse: proc
 #_____________________________
-func Proc_args *(P :var Par) :ast.Proc_Args=
+func Proc_args *(P :var Parser) :ast.Proc_Args=
   result = @[]
   P.expect token_Id.sp_paren_L
   P.move(1)
@@ -147,7 +147,7 @@ func Proc_args *(P :var Par) :ast.Proc_Args=
   P.move(1)
   P.indentation()
 #_____________________________
-func Proc_body *(P :var Par) :ast.Proc_Body=
+func Proc_body *(P :var Parser) :ast.Proc_Body=
   result = @[]
   P.expect token_Id.sp_equal
   P.move(1)
@@ -163,7 +163,7 @@ func Proc_body *(P :var Par) :ast.Proc_Body=
     P.move(1)
     P.indentation()
 #_____________________________
-func Proc_retT *(P :var Par) :ast.Type=
+func Proc_retT *(P :var Parser) :ast.Type=
   result = ast.Type()
   P.expect token_Id.sp_colon
   P.move(1)
@@ -173,7 +173,7 @@ func Proc_retT *(P :var Par) :ast.Type=
   P.move(1)
   P.indentation()
 #_____________________________
-func Proc *(P :var Par) :void=
+func Proc *(P :var Parser) :void=
   var res = ast.Node(kind: Proc)
   # Skip Keyword
   P.expect token_Id.kw_proc
@@ -206,19 +206,19 @@ func Proc *(P :var Par) :void=
   P.ast.nodes.add res
 
 #_______________________________________
-# @section Parse: var
+# @section Parser: var
 #_____________________________
-func Var_type *(P :var Par) :ast.Var_type=
+func Var_type *(P :var Parser) :ast.Var_type=
   result = ast.Var_type()
   result.name = "int"
 #___________________
-func Var_value *(P :var Par) :ast.Var_value=
+func Var_value *(P :var Parser) :ast.Var_value=
   P.expect token_Id.sp_equal
   P.move(1)
   P.indentation()
   result = P.literal()
 #___________________
-func variable *(P :var Par) :void=
+func variable *(P :var Parser) :void=
   var res = ast.Node(kind: Var)
   # Skip Keyword
   P.expect token_Id.kw_var
@@ -254,7 +254,7 @@ func variable *(P :var Par) :void=
 #_______________________________________
 # @section Parser: Entry Point
 #_____________________________
-func process *(P :var Par) :void=
+func process *(P :var Parser) :void=
   while P.pos < P.buf.len.Sz:
     case P.tk.id
     of token_Id.kw_proc     : P.Proc()

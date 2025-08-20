@@ -17,20 +17,20 @@ import ./rules as mini
 type Sz  * = base.Sz
 type Pos * = slate.source.Pos
 
-type token_Id = mini.Id
+type TokenID = mini.Id
 
-type Tk * = object
-  id   *:token_Id
+type Token * = object
+  id   *:TokenID
   loc  *:slate.source.Loc
   ind  *:slate.depth.Level
-type List * = seq[Tk]
+type List * = seq[Token]
 type token_List = tokenizer.List
 
 type Depth * = object
   lvl  *:slate.depth.Level= 0 ## Current indentation level to assign to tokens.
   chg  *:bool= off            ## Should we update depth_level (are we in a newline)
 
-type Tok * = object
+type Tokenizer * = object
   pos    *:tokenizer.Pos= 0
   buf    *:slate.lexer.List= @[]
   src    *:slate.source.Code= ""
@@ -56,48 +56,48 @@ template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
 #_______________________________________
 # @section Tokenizer: Data Management
 #_____________________________
-func destroy *(T :var Tok) :void= T = Tok()
-func create *(_:typedesc[Tok]; L :slate.Lex) :Tok=
-  result = Tok()
+func destroy *(T :var Tokenizer) :void= T = Tokenizer()
+func create *(_:typedesc[Tokenizer]; L :slate.Lex) :Tokenizer=
+  result = Tokenizer()
   result.src = L.src
   result.buf = L.res
 #___________________
-func pos_next *(T :Tok, pos :tokenizer.Pos) :tokenizer.Pos {.inline.}=
+func pos_next *(T :Tokenizer, pos :tokenizer.Pos) :tokenizer.Pos {.inline.}=
   result = T.pos+pos
   if result >= T.buf.len.Sz: result = T.buf.len-1
 #___________________
-func next *(T :Tok, pos :tokenizer.Pos) :slate.Lx {.inline.}= T.buf[T.pos_next(pos)]
+func next *(T :Tokenizer, pos :tokenizer.Pos) :slate.Lx {.inline.}= T.buf[T.pos_next(pos)]
 #___________________
-func lx *(T :Tok) :slate.Lx {.inline.}= T.next(0)
+func lx *(T :Tokenizer) :slate.Lx {.inline.}= T.next(0)
 #___________________
-func add *(T :var Tok; id :mini.Id; loc :source.Loc) :void {.inline.}= T.res.add Tk(id: id, loc: loc, ind: T.depth.lvl)
-func add *(T :var Tok; id :mini.Id) :void {.inline.}= T.add id, T.lx.loc
+func add *(T :var Tokenizer; id :TokenID; loc :source.Loc) :void {.inline.}= T.res.add Token(id: id, loc: loc, ind: T.depth.lvl)
+func add *(T :var Tokenizer; id :TokenID) :void {.inline.}= T.add id, T.lx.loc
 
 
 #_______________________________________
 # @section Single Lexemes: Singles
 #_____________________________
-func number  *(T :var Tok) :void=  T.add b_number
-func star    *(T :var Tok) :void=  T.add op_star
-func colon   *(T :var Tok) :void=  T.add sp_colon
-func equal   *(T :var Tok) :void=  T.add sp_equal
-func newline *(T :var Tok) :void=
+func number  *(T :var Tokenizer) :void=  T.add b_number
+func star    *(T :var Tokenizer) :void=  T.add op_star
+func colon   *(T :var Tokenizer) :void=  T.add sp_colon
+func equal   *(T :var Tokenizer) :void=  T.add sp_equal
+func newline *(T :var Tokenizer) :void=
   T.add wht_newline
   T.depth.chg = on
   T.depth.lvl = 0
 #___________________
-func keyword *(T :var Tok) :void=
+func keyword *(T :var Tokenizer) :void=
   let kw = T.lx.loc.From(T.src)
   T.add mini.Keywords[kw]
 #___________________
-func ident *(T :var Tok) :void=
+func ident *(T :var Tokenizer) :void=
   if T.lx.From(T.src) in mini.Keywords: T.keyword(); return
   T.add b_ident
 
 #_______________________________________
 # @section Single Lexemes: Groups
 #_____________________________
-func paren *(T :var Tok) :void=
+func paren *(T :var Tokenizer) :void=
   case T.lx.id
   of slate.lexer.Id.paren_L   : T.add sp_paren_L
   of slate.lexer.Id.paren_R   : T.add sp_paren_R
@@ -110,7 +110,7 @@ func paren *(T :var Tok) :void=
 #_______________________________________
 # @section Multi Lexemes
 #_____________________________
-func space *(T :var Tok) :void=
+func space *(T :var Tokenizer) :void=
   var loc = T.lx.loc
   T.pos.inc
   while T.pos < T.buf.len.Sz:
@@ -130,7 +130,7 @@ func space *(T :var Tok) :void=
 #_______________________________________
 # @section Tokenizer: Entry Point
 #_____________________________
-func process *(T :var Tok) :void=
+func process *(T :var Tokenizer) :void=
   while T.pos < T.buf.len.Sz:
     case T.lx.id
     of slate.lexer.Id.space     : T.space()
