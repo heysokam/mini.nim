@@ -71,7 +71,8 @@ func skip *(P :var Par; list :varargs[token_Id]) :void=
 #___________________
 func newline *(P :var Par) :void=
   # TODO: Shouldn't ignore empty newlines. They matter for meaningful indentation
-  P.skip wht_newline
+  # P.skip wht_newline
+  P.move(1)
 #___________________
 func indentation *(P :var Par; list :varargs[token_Id]) :void=
   # TODO: Meaningful indentation
@@ -245,7 +246,7 @@ func variable *(P :var Par) :void=
     P.indentation()
   # Expect a newline at the end of the statement
   P.expect token_Id.wht_newline
-  P.move(1)
+  # P.move(1)  # @note: Do not move to the next token, the main while loop will do that
   # Add the var node to the AST
   P.ast.nodes.add res
 
