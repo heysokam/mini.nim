@@ -39,6 +39,12 @@ template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
   const inst = instantiationInfo()
   const info = "$#($#,$#): " % [inst.fileName, $inst.line, $inst.column]
   {.cast(noSideEffect).}: raise newException(Err, info & "\n " & msg.join(" "))
+#___________________
+template error_toplevel (P :var Par)=
+  P.src.insert("⭸", P.tk.loc.start.Natural)
+  parser.fail UnknownToplevelTokenError,
+    &"Parsing token `{P.tk.id}` at the Toplevel is not implemented.\n\n Token: {P.tk}\n Lexemes:\n  {P.buf}\n\n Source:\n`{P.src}`"
+
 
 #_______________________________________
 # @section Parser: Data Management
@@ -243,6 +249,7 @@ func variable *(P :var Par) :void=
   # Add the var node to the AST
   P.ast.nodes.add res
 
+
 #_______________________________________
 # @section Parser: Entry Point
 #_____________________________
@@ -252,7 +259,7 @@ func process *(P :var Par) :void=
     of token_Id.kw_proc     : P.Proc()
     of token_Id.kw_var      : P.variable()
     of token_Id.wht_newline : P.newline()
-    else                    : parser.fail UnknownToplevelTokenError, &"Parsing token `{P.tk.id}` at the Toplevel is not implemented.\n\n Token: {P.tk}\n Lexemes:\n  {P.buf}\n\n Source:\n`{P.src}`"
+    else                    : P.error_toplevel()
     P.pos.inc
   discard
 
