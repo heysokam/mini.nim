@@ -21,13 +21,13 @@ const tests_deps = mini_deps & @[
 # @section Build the Compiler
 #_____________________________
 # Program.new("mini.nim", deps= mini_deps).build.run
-Program.new("scope.nim", deps= mini_deps).build.run
+let wip = Program.new("scope.nim", deps= mini_deps)
 
 
 #_______________________________________
 # @section Run all Unit Tests
 #_____________________________
-proc build_tests=
+proc tests=
   let srcDir = confy.cfg.dirs.src
   confy.cfg.dirs.src = "tests"
   for file in "./tests".walkDirRec(relative=true).toSeq.reversed:
@@ -37,4 +37,8 @@ proc build_tests=
     target.args.add @["--path:./src"]
     target.build.run
   confy.cfg.dirs.src = srcDir
+
+when isMainModule:
+  wip.build.run
+  # build.tests()
 
