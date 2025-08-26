@@ -5,44 +5,20 @@
 from std/strformat import `&`
 from std/strutils  import `%`, join
 # @deps slate
-import slate
+import slate except fail, Pos
 # @deps mini.nim
+import ./types/base
+import ./types/parser
+import ./types/tokenizer
+import ./types/ast
 import ./rules as mini
-import ./tokenizer
-import ./ast
+import ./errors
 
 
-#_______________________________________
-# @section Parser: Types
-#_____________________________
-type Pos * = tokenizer.Pos
-#___________________
-type Parser * = object
-  pos  *:parser.Pos=  0
-  src  *:slate.source.Code= ""
-  buf  *:tokenizer.List= @[]
-  ast  *:Ast
-
-#_______________________________________
-# @section Parser: Errors
-#_____________________________
-type ParserError                = object of CatchableError
-type UnknownToplevelTokenError  = object of ParserError
-type UnexpectedTokenError       = object of ParserError
-type UnknownStatementTokenError = object of ParserError
-#___________________
-template fail *(Err :typedesc[CatchableError]; msg :varargs[string, `$`])=
-  ## @descr
-  ##  Marks a block of code as an unrecoverable fatal error. Raises an exception when entering the block.
-  ##  For debugging unexpected errors on the buildsystem.
-  const inst = instantiationInfo()
-  const info = "$#($#,$#): " % [inst.fileName, $inst.line, $inst.column]
-  {.cast(noSideEffect).}: raise newException(Err, info & "\n " & msg.join(" "))
 #___________________
 template error_toplevel (P :var Parser)=
   P.src.insert("⭸", P.token.loc.start.Natural)
-  parser.fail UnknownToplevelTokenError,
-    &"Parsing token `{P.token.id}` at the Toplevel is not implemented.\n\n Token: {P.token}\n Lexemes:\n  {P.buf}\n\n Source:\n`{P.src}`"
+  UnknownToplevelTokenError.fail &"Parsing token `{P.token.id}` at the Toplevel is not implemented.\n\n Token: {P.token}\n Lexemes:\n  {P.buf}\n\n Source:\n`{P.src}`"
 
 
 #_______________________________________
@@ -55,11 +31,11 @@ func create  *(_:typedesc[Parser]; T :Tokenizer) :Parser=
   result.buf = T.res
   result.ast = Ast.default
 #___________________
-func pos_next *(P :Parser, pos :parser.Pos) :parser.Pos {.inline.}=
+func pos_next *(P :Parser, pos :Pos) :Pos {.inline.}=
   result = P.pos+pos
   if result >= P.buf.len.Sz: result = P.buf.len-1
 #___________________
-func next *(P :Parser, pos :parser.Pos) :Token {.inline.}= P.buf[P.pos_next(pos)]
+func next *(P :Parser, pos :Pos) :Token {.inline.}= P.buf[P.pos_next(pos)]
 #___________________
 func token *(P :Parser) :Token {.inline.}= P.next(0)
 #___________________
@@ -82,7 +58,7 @@ func indentation *(P :var Parser; list :varargs[TokenID]) :void=
 # @section Parser: Data Validation
 #_____________________________
 func expect *(P :Parser; list :varargs[TokenID]) :void=
-  if P.token.id notin list: parser.fail UnexpectedTokenError, &"Found token `{P.token}`, but expected one of {list}"
+  if P.token.id notin list: UnexpectedTokenError.fail &"Found token `{P.token}`, but expected one of {list}"
 
 
 #_______________________________________
@@ -100,6 +76,8 @@ func expression *(P :var Parser) :ast.Expression=
 #_______________________________________
 # @section Parse: Statements
 #_____________________________
+const StatementIDs * = {TokenID.kw_return, TokenID.kw_var}
+#___________________
 func statement_return *(P :var Parser) :ast.Statement=
   P.expect TokenID.kw_return
   P.move(1)
@@ -130,7 +108,7 @@ func statement *(P :var Parser) :ast.Statement=
   result = case P.token.id
   of kw_return : P.statement_return()
   of kw_var    : P.statement_variable()
-  else         : parser.fail UnknownStatementTokenError, &"Parsing token `{P.token}` as a statement is not implemented."; ast.Statement()
+  else         : UnknownStatementTokenError.fail &"Parsing token `{P.token}` as a statement is not implemented."; Statement()
 
 
 #_______________________________________
@@ -256,9 +234,9 @@ func variable *(P :var Parser) :void=
 func process *(P :var Parser) :void=
   while P.pos < P.buf.len.Sz:
     case P.token.id
-    of TokenID.kw_proc     : P.Proc()
-    of TokenID.kw_var      : P.variable()
-    of TokenID.wht_newline : P.newline()
-    else                   : P.error_toplevel()
+    of kw_proc     : P.Proc()
+    of kw_var      : P.variable()
+    of wht_newline : P.newline()
+    else           : P.error_toplevel()
     P.pos.inc
 

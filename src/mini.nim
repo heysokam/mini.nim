@@ -4,10 +4,12 @@
 # @deps slate
 import slate
 # @deps mini.nim
-import ./mini/base
-import ./mini/tokenizer as tok
-import ./mini/parser as par
-import ./mini/ast
+import ./mini/types/base
+import ./mini/types/tokenizer as tok
+import ./mini/types/parser as par
+import ./mini/types/ast
+import ./mini/tokenizer
+import ./mini/parser
 import ./mini/codegen
 from ./mini/compile as cc import nil
 type Lexer     = slate.Lex
