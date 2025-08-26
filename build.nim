@@ -21,16 +21,20 @@ const tests_deps = mini_deps & @[
 # @section Build the Compiler
 #_____________________________
 # Program.new("mini.nim", deps= mini_deps).build.run
+Program.new("scope.nim", deps= mini_deps).build.run
 
 
 #_______________________________________
 # @section Run all Unit Tests
 #_____________________________
-confy.cfg.dirs.src = "tests"
-for file in "./tests".walkDirRec(relative=true).toSeq.reversed:
-  if not file.splitFile.name.startsWith("t"): continue
-  var target = UnitTest.new(file)
-  target.deps = tests_deps
-  target.args.add @["--path:./src"]
-  target.build.run
+proc build_tests=
+  let srcDir = confy.cfg.dirs.src
+  confy.cfg.dirs.src = "tests"
+  for file in "./tests".walkDirRec(relative=true).toSeq.reversed:
+    if not file.splitFile.name.startsWith("t"): continue
+    var target = UnitTest.new(file)
+    target.deps = tests_deps
+    target.args.add @["--path:./src"]
+    target.build.run
+  confy.cfg.dirs.src = srcDir
 

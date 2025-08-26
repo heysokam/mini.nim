@@ -31,7 +31,11 @@ func next *(T :Tokenizer, pos :Pos) :slate.Lx {.inline.}= T.buf[T.pos_next(pos)]
 #___________________
 func lexeme *(T :Tokenizer) :slate.Lx {.inline.}= T.next(0)
 #___________________
-func add *(T :var Tokenizer; id :TokenID; loc :source.Loc) :void {.inline.}= T.res.add Token(id: id, loc: loc, ind: T.depth.lvl)
+func add *(T :var Tokenizer; id :TokenID; loc :source.Loc) :void {.inline.}=
+  T.res.add Token(
+    id    : id,
+    loc   : loc,
+    depth : slate.Depth(indent:T.depth.lvl))
 func add *(T :var Tokenizer; id :TokenID) :void {.inline.}= T.add id, T.lexeme.loc
 
 
@@ -46,6 +50,7 @@ func newline *(T :var Tokenizer) :void=
   T.add wht_newline
   T.depth.chg = on
   T.depth.lvl = 0
+  T.pos.inc
 #___________________
 func keyword *(T :var Tokenizer) :void=
   let kw = T.lexeme.loc.From(T.src)

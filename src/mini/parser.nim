@@ -124,7 +124,7 @@ func Proc_args *(P :var Parser) :ast.Proc_Args=
   P.move(1)
   P.indentation()
 #_____________________________
-func Proc_body *(P :var Parser) :ast.Proc_Body=
+func Proc_body *(P :var Parser; proc_indent :DepthLevel) :Proc_Body=
   result = @[]
   P.expect TokenID.sp_equal
   P.move(1)
@@ -133,9 +133,11 @@ func Proc_body *(P :var Parser) :ast.Proc_Body=
   if P.token.id == TokenID.wht_newline:
     P.move(1)
     P.indentation()
-  # End each statement with a newline
-  while P.token.id != TokenID.wht_newline:
+  # Parse all statements
+  # while P.token.id in StatementIDs:
+  while P.token.depth.indent > proc_indent:
     P.indentation()
+    debugEcho $P.token
     result.add P.statement()
     P.move(1)
     P.indentation()
@@ -154,6 +156,7 @@ func Proc *(P :var Parser) :void=
   var res = ast.Node(kind: Proc)
   # Skip Keyword
   P.expect TokenID.kw_proc
+  let proc_indent = P.token.depth.indent
   P.move(1)
   P.indentation()
   # Get the name
@@ -175,7 +178,7 @@ func Proc *(P :var Parser) :void=
   # Get the body
   P.expect TokenID.sp_equal, TokenID.sp_semicolon
   if P.token.id == TokenID.sp_equal:
-    res.proc_body = P.Proc_body()
+    res.proc_body = P.Proc_body(proc_indent)
   elif P.token.id == TokenID.sp_semicolon:
     P.move(1)
     P.indentation()
