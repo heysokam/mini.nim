@@ -6,7 +6,7 @@ from std/strformat import `&`, fmt
 # @deps slate
 import slate
 # @deps mini.nim
-import ../ast as mini
+import ../types/ast as mini
 from ./types import add
 type Module = types.Module
 

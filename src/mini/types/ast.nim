@@ -1,22 +1,19 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
-# @deps slate
-# import slate
 # @deps mini.nim
 import ./base
-type Lang = base.Lang
 
 
 #_______________________________________
-# @section AST: Types
+# @section AST Types: Types
 #_____________________________
 type Type * = object
   name  *:string
 
 
 #_______________________________________
-# @section AST: Value Data Types
+# @section AST Types: Value Data Types
 #_____________________________
 type Data * = object
   name   *:string
@@ -25,7 +22,7 @@ type Data * = object
 
 
 #_______________________________________
-# @section AST: Expressions
+# @section AST Types: Expressions
 #_____________________________
 type ExpressionKind *{.pure.}= enum Literal
 #___________________
@@ -36,14 +33,14 @@ type Expression * = object
 
 
 #_______________________________________
-# @section AST: Variables
+# @section AST Types: Variables
 #_____________________________
 type Var_value * = ast.Expression
 type Var_type  * = ast.Type
 
 
 #_______________________________________
-# @section AST: Statements
+# @section AST Types: Statements
 #_____________________________
 type StatementKind *{.pure.}= enum Return, Variable
 #___________________
@@ -60,7 +57,7 @@ type StatementList * = seq[ast.Statement]
 
 
 #_______________________________________
-# @section AST: Procedures
+# @section AST Types: Procedures
 #_____________________________
 type Proc_Body * = ast.StatementList
 type Proc_Arg  * = ast.Data
@@ -68,17 +65,17 @@ type Proc_Args * = seq[ast.Proc_Arg]
 
 
 #_______________________________________
-# @section AST: Toplevel Nodes
+# @section AST Types: Toplevel Nodes
 #_____________________________
 type NodeKind *{.pure.}= enum Proc, Var
 #___________________
 type Node * = object
   name    *:string
   public  *:bool= false
-  case kind *:NodeKind
+  case kind *:ast.NodeKind
   of Proc:
     proc_args  *:ast.Proc_Args = @[]
-    proc_retT  *:ast.Type      = ast.Type(name: "void")
+    proc_retT  *:ast.Type      = Type(name: "void")
     proc_body  *:ast.Proc_Body = @[]
   of Var:
     var_type   *:ast.Type
@@ -88,9 +85,10 @@ type TopLevel * = seq[ast.Node]
 
 
 #_______________________________________
-# @section AST: Data
+# @section AST Types: Data
 #_____________________________
 type Ast * = object
-  lang   *:ast.Lang= C
+  lang   *:Lang= C
   nodes  *:ast.TopLevel= @[]
+
 

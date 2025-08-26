@@ -2,7 +2,7 @@
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
 # @deps mini.nim
-import ../ast as mini
+import ../types/ast as mini
 import ./types
 type Module = types.Module
 

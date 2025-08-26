@@ -6,7 +6,7 @@ from std/strformat import `&`
 # @deps slate
 import slate
 # @deps mini.nim
-import ../base as mini
+import ../types/base as mini
 
 #_______________________________________
 #_____________________________

@@ -4,7 +4,7 @@
 # @deps ndk
 from ./compile/confy import nil
 # @deps mini.nim
-from ./base as mini import nil
+from ./types/base as mini import nil
 from ./codegen/types as codegen import nil
 from ./compile/c import nil
 from ./compile/zig import nil

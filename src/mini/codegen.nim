@@ -2,8 +2,8 @@
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
 # @deps mini.nim
-from ./base import nil
-import ./ast as mini
+from ./types/base import nil
+import ./types/ast as mini
 from ./codegen/types import nil
 from ./codegen/c import nil
 from ./codegen/zig import nil
