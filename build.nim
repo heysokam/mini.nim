@@ -13,6 +13,7 @@ const mini_deps = Dependencies.new(
   Dependency.new("confy", "https://github.com/heysokam/confy"),
 )
 const tests_deps = mini_deps & @[
+  Dependency.new("mini",     "https://github.com/heysokam/mini.nim", "src"),
   Dependency.new("minitest", "https://github.com/heysokam/minitest", "src"),
 ]
 
@@ -34,11 +35,11 @@ proc tests=
     if not file.splitFile.name.startsWith("t"): continue
     var target = UnitTest.new(file)
     target.deps = tests_deps
-    target.args.add @["--path:./src"]
+    target.args.add @["--path:./src", "--warning:UnusedImport:off"]
     target.build.run
   confy.cfg.dirs.src = srcDir
 
 when isMainModule:
   wip.build.run
-  # build.tests()
+  build.tests()
 

@@ -4,9 +4,12 @@
 # @deps std
 from std/os import splitFile
 # @deps ndk
-import minitest
+import pkg/minitest
+import pkg/slate
 # @deps mini.nim
-import mini
+import pkg/mini
+# @deps mini.nim/tests
+import ./base
 import ./cases
 
 
@@ -16,7 +19,9 @@ describe "General Cases":
     const Input_file = cases.Hello42_nim
     const Expected_h = cases.Hello42_h.staticRead()
     const Expected_c = cases.Hello42_c.staticRead()
+    const Expected_d = cases.Hello42_Scope
     # Parse
+    check_scope Input_code, Expected_d
     let result_ast = mini.parse(code=Input_code)
     check result_ast.nodes.len == 1
     # Codegen

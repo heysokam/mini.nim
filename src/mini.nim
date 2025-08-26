@@ -12,7 +12,7 @@ import ./mini/tokenizer
 import ./mini/parser
 import ./mini/codegen
 from ./mini/compile as cc import nil
-type Lexer     = slate.Lex
+type Lexer     * = slate.Lex
 type Tokenizer = tok.Tokenizer
 type Parser    = par.Parser
 type Ast       = ast.Ast
@@ -22,11 +22,12 @@ type Ast       = ast.Ast
 #_____________________________
 export base
 export cc
-export mini.Lexer
-export mini.Tokenizer
-export mini.Parser
-export mini.Ast
+export tok
+export par
+export tokenizer
+export parser
 export codegen
+
 
 #_______________________________________
 # @section Parser: Entry Point

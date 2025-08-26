@@ -2,19 +2,11 @@ from std/strformat import `&`
 import slate except fail
 import ./mini
 import ./mini/rules
-import ./mini/errors
 import ./mini/log
 import ./mini/types/tokenizer as tok
 import ./mini/types/parser as par
 import ./mini/tokenizer
 import ./mini/parser
-
-
-#_______________________________________
-# @section Scope Pass: Data Validation
-#_____________________________
-func expect *(P :mini.Parser; list :varargs[TokenID]) :void=
-  if P.token.id notin list: UnexpectedTokenError.fail &"Found token `{P.token}`, but expected one of {list}"
 
 
 #_______________________________________
