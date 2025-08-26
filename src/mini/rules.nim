@@ -42,3 +42,13 @@ const Keywords * = {
   "array"   : kw_array,
 }.toTable
 
+const Keywords_ScopeStart * = {
+  kw_proc,
+  kw_while
+}
+
+const Tokens_NewlineStart * = {
+  wht_newline,
+  sp_semicolon
+  }
+
