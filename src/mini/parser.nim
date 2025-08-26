@@ -13,6 +13,7 @@ import ./types/tokenizer
 import ./types/ast
 import ./rules as mini
 import ./errors
+import ./passes/scope
 
 
 #___________________
@@ -22,28 +23,8 @@ template error_toplevel (P :var Parser)=
 
 
 #_______________________________________
-# @section Parser: Data Management
+# @section Parser: Whitespace & Newlines
 #_____________________________
-func destroy *(P :var Parser) :void= P = Parser.default
-func create  *(_:typedesc[Parser]; T :Tokenizer) :Parser=
-  result = Parser()
-  result.src = T.src
-  result.buf = T.res
-  result.ast = Ast.default
-#___________________
-func pos_next *(P :Parser, pos :Pos) :Pos {.inline.}=
-  result = P.pos+pos
-  if result >= P.buf.len.Sz: result = P.buf.len-1
-#___________________
-func next *(P :Parser, pos :Pos) :Token {.inline.}= P.buf[P.pos_next(pos)]
-#___________________
-func token *(P :Parser) :Token {.inline.}= P.next(0)
-#___________________
-func move *(P :var Parser; pos :source.Pos) :void {.inline.}= P.pos = P.pos_next(pos)
-#___________________
-func skip *(P :var Parser; list :varargs[TokenID]) :void=
-  while P.token.id in list: P.move(1)
-#___________________
 func newline *(P :var Parser) :void=
   # TODO: Shouldn't ignore empty newlines. They matter for meaningful indentation
   # P.skip wht_newline
@@ -52,13 +33,6 @@ func newline *(P :var Parser) :void=
 func indentation *(P :var Parser; list :varargs[TokenID]) :void=
   # TODO: Meaningful indentation
   P.skip wht_space
-
-
-#_______________________________________
-# @section Parser: Data Validation
-#_____________________________
-func expect *(P :Parser; list :varargs[TokenID]) :void=
-  if P.token.id notin list: UnexpectedTokenError.fail &"Found token `{P.token}`, but expected one of {list}"
 
 
 #_______________________________________
@@ -124,7 +98,7 @@ func Proc_args *(P :var Parser) :ast.Proc_Args=
   P.move(1)
   P.indentation()
 #_____________________________
-func Proc_body *(P :var Parser; proc_indent :DepthLevel) :Proc_Body=
+func Proc_body *(P :var Parser; proc_depth :slate.Depth) :Proc_Body=
   result = @[]
   P.expect TokenID.sp_equal
   P.move(1)
@@ -134,13 +108,12 @@ func Proc_body *(P :var Parser; proc_indent :DepthLevel) :Proc_Body=
     P.move(1)
     P.indentation()
   # Parse all statements
-  # while P.token.id in StatementIDs:
-  while P.token.depth.indent > proc_indent:
+  while proc_depth in P.token.depth:
     P.indentation()
-    debugEcho $P.token
     result.add P.statement()
     P.move(1)
     P.indentation()
+    if P.last: break
 #_____________________________
 func Proc_retT *(P :var Parser) :ast.Type=
   result = ast.Type()
@@ -156,7 +129,7 @@ func Proc *(P :var Parser) :void=
   var res = ast.Node(kind: Proc)
   # Skip Keyword
   P.expect TokenID.kw_proc
-  let proc_indent = P.token.depth.indent
+  let proc_depth = P.token.depth
   P.move(1)
   P.indentation()
   # Get the name
@@ -178,7 +151,7 @@ func Proc *(P :var Parser) :void=
   # Get the body
   P.expect TokenID.sp_equal, TokenID.sp_semicolon
   if P.token.id == TokenID.sp_equal:
-    res.proc_body = P.Proc_body(proc_indent)
+    res.proc_body = P.Proc_body(proc_depth)
   elif P.token.id == TokenID.sp_semicolon:
     P.move(1)
     P.indentation()
@@ -235,6 +208,9 @@ func variable *(P :var Parser) :void=
 # @section Parser: Entry Point
 #_____________________________
 func process *(P :var Parser) :void=
+  # Apply Pre-Passes to the TokenList
+  scope.pass(P)  # Scope pass
+  # Parse the TokenList
   while P.pos < P.buf.len.Sz:
     case P.token.id
     of kw_proc     : P.Proc()

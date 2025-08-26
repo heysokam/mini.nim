@@ -17,6 +17,7 @@ type UnknownParenLexemeError * = object of TokenizerError
 # @section Parser Errors
 #_____________________________
 type ParserError                * = object of CatchableError
+type UnexpectedPositionError    * = object of ParserError
 type UnknownToplevelTokenError  * = object of ParserError
 type UnexpectedTokenError       * = object of ParserError
 type UnknownStatementTokenError * = object of ParserError

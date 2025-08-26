@@ -8,7 +8,6 @@ import ./mini/types/tokenizer as tok
 import ./mini/types/parser as par
 import ./mini/tokenizer
 import ./mini/parser
-import ./mini/passes/scope as scoping
 
 
 #_______________________________________
@@ -32,8 +31,8 @@ func parse *(code :slate.source.Code) :auto=
   # Parser
   var P = mini.Parser.create(T)
   defer: P.destroy()
+  P.process()
   return P
-  # P.process()
   # Return the resulting AST
   # result = P.ast
 
@@ -95,8 +94,6 @@ when isMainModule:
   dbg "Expected: ......................"
   for entry in Expected: dbg entry
   dbg "................................"
-  # Do the scoping pass
-  scoping.pass(output)
   # Compare Result with Expected
   for id,entry in output.buf.pairs:
     doAssert(entry.depth.scope == Expected[id].scope and entry.depth.indent.int == Expected[id].indent,
@@ -104,6 +101,5 @@ when isMainModule:
   dbg "Result: ........................"
   for entry in output.buf: dbg $entry
   dbg "................................"
-
 
 

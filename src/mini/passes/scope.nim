@@ -16,7 +16,6 @@ import ../types/base as mini
 import ../types/parser
 import ../rules
 import ../errors
-import ../parser
 
 
 iterator lines_from_current *(P :var Parser) :tuple[start :mini.Pos, End :mini.Pos]=
@@ -72,5 +71,6 @@ func pass *(P :var Parser) :void=
     of kw_proc: scope.Proc(P)
     else: UnexpectedTokenError.fail &"Found an unmapped token on the early Scoping pass of the Parser:\n   {P.token}\n"
     P.pos.inc
-
+  if P.pos.int < P.buf.len: UnexpectedPositionError.fail &"The Scope designation pass couldn't reach the end of the TokenList. Stopped at position: ({P.pos}/{P.buf.len-1})"
+  P.pos = 0 # Reset position when done
 
