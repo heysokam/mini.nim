@@ -22,12 +22,13 @@ iterator lines_from_current *(P :var Parser) :tuple[start :mini.Pos, End :mini.P
   ## @descr
   ## Returns the (start,end) position of every line in the given `P` parser.
   ## Iteration starts from `P.pos`, and each line will end when a token from `rules.Tokens_NewlineStart` is found.
-  var result :tuple[start :mini.Pos, End :mini.Pos]= (0,0)
-  result.start = P.pos
-  result.End   = result.start
-  while P.buf[result.End].id notin rules.Tokens_NewlineStart: result.End.inc
-  result.End.inc  # Include the line-break token in the line
-  yield result
+  while true:
+    var result :tuple[start :mini.Pos, End :mini.Pos]= (0,0)
+    result.start = P.pos
+    result.End   = result.start
+    while P.buf[result.End].id notin rules.Tokens_NewlineStart: result.End.inc
+    yield result
+    if P.buf[result.End].id in rules.Tokens_NewlineStart: break
 
 
 func stmt_list (P :var Parser) :void=
@@ -36,7 +37,7 @@ func stmt_list (P :var Parser) :void=
   ## and assigns a new scope_id to every token found.
   let scope_id = P.token.depth.scope.next
   for line in P.lines_from_current:
-    for id in line.start..<line.End:
+    for id in line.start..line.End:
       P.buf[id].depth.scope = scope_id
     P.pos = line.End+1  # Done with this line. Move the parser to the start of the next line
 
@@ -62,14 +63,24 @@ func Proc (P :var Parser) :void=
   scope.stmt_list(P)
 
 
+func variable (P :var Parser) :void=
+  while P.token.id != wht_newline: P.pos.inc
+  # @note Leaves parser at the end of the line
+
+func newline (P :var Parser) :void=
+  while P.token.id in {wht_newline, wht_space}: P.pos.inc
+
+
 func pass *(P :var Parser) :void=
   ## @descr
   ## Entry point of the Scope designation early parser pass.
   ## Will tag every token in the entire Parser with its corresponding ScopeID
-  while P.token.id in rules.Keywords_ScopeStart:
+  while P.pos < P.buf.len.Sz:
     case P.token.id
-    of kw_proc: scope.Proc(P)
-    else: UnexpectedTokenError.fail &"Found an unmapped token on the early Scoping pass of the Parser:\n   {P.token}\n"
+    of kw_proc     : P.Proc()
+    of kw_var      : P.variable()
+    of wht_newline : P.newline()
+    else           : P.error_toplevel()
     P.pos.inc
   if P.pos.int < P.buf.len: UnexpectedPositionError.fail &"The Scope designation pass couldn't reach the end of the TokenList. Stopped at position: ({P.pos}/{P.buf.len-1})"
   P.pos = 0 # Reset position when done
