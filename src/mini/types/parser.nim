@@ -1,12 +1,10 @@
 #:_______________________________________________________________________
 #  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  GNU GPLv3 or later  :
 #:_______________________________________________________________________
-# @deps std
 from std/strformat import `&`
 # @deps slate
 import slate except Pos, fail
 # @deps mini.nim
-import ../errors
 import ./base
 import ./ast
 import ./tokenizer
@@ -18,6 +16,7 @@ import ./tokenizer
 type Parser * = object
   pos  *:Pos=  0
   src  *:slate.source.Code= ""
+  err  *:slate.source.Code= ""
   buf  *:TokenList= @[]
   ast  *:Ast
 
@@ -46,11 +45,11 @@ func move *(P :var Parser; pos :source.Pos) :void {.inline.}= P.pos = P.pos_next
 #___________________
 func skip *(P :var Parser; list :varargs[TokenID]) :void=
   while P.token.id in list: P.move(1)
-
-
-#_______________________________________
-# @section Parser: Data Validation
-#_____________________________
-func expect *(P :Parser; list :varargs[TokenID]) :void=
-  if P.token.id notin list: UnexpectedTokenError.fail &"Found token `{P.token}`, but expected one of {list}"
+#___________________
+func `$` *(P :Parser) :string=
+  result = ""
+  result.add "Tokens:\n"
+  for id,token in P.buf.pairs:
+    result.add &"  {id:02} : {token} -> `{token.loc.From(P.src)}`\n"
+  result.add &"\n Source:\n`{P.err}`"
 
