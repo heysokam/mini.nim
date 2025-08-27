@@ -50,7 +50,6 @@ func newline *(T :var Tokenizer) :void=
   T.add wht_newline
   T.depth.chg = on
   T.depth.lvl = 0
-  T.pos.inc
 #___________________
 func keyword *(T :var Tokenizer) :void=
   let kw = T.lexeme.loc.From(T.src)
