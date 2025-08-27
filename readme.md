@@ -5,18 +5,20 @@
 ## TODO
 ```md
 # Required
-- [x] Literal Value (int)
-- [x] State (variables/assignment)
+- [ ] Literal Value (int)
+- [ ] State (variables/assignment)
 - [ ] Assignment and basic arithmetic (+ and -)
 - [ ] Operations to check conditions (== and !=)
 - [ ] Conditional Execution (if statements)
 - [ ] Looping Construct (while)
 - [ ] Unbounded Memory (conceptually): (arrays)
+# Nim Inherited
+- [ ] Meaningful Indentation
 # Quality of Life features
 - [ ] Includes
 - [ ] Functions
   - [ ] return
-    - [x] Literal
+    - [ ] Literal
     - [ ] Identifier
 - [ ] Comments
 ```
