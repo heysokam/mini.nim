@@ -40,6 +40,6 @@ proc tests=
   confy.cfg.dirs.src = srcDir
 
 when isMainModule:
-  wip.build.run
+  # wip.build.run
   build.tests()
 
