@@ -6,4 +6,5 @@
 #ifndef H_mini
 #define H_mini
 #include "./mini/tokenizer.h"
+#include "./mini/parser.h"
 #endif  // H_mini
