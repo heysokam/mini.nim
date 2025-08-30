@@ -6,7 +6,8 @@
 #ifndef H_mini
 #define H_mini
 #include "./mini/lexer.h"
-#include "./mini/base.h"  // @warning Must be after lexer.h
+#include "./mini/types.h"  // @warning Must be after lexer.h
+#include "./mini/source.h"
 #include "./mini/rules.h"
 #include "./mini/tokenizer.h"
 #include "./mini/parser.h"

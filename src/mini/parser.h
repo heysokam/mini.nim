@@ -3,6 +3,12 @@
 //:____________________________________________________________
 #ifndef H_mini_parser
 #define H_mini_parser
+#include "./passes.h"
+
+
+mini_Parser mini_parser_create (mini_Tokenizer const* const T);
+void        mini_parser_destroy (mini_Parser* const P);
+void        mini_parser_process (mini_Parser* const P);
 
 
 //______________________________________

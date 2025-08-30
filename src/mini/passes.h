@@ -1,24 +1,26 @@
 //:____________________________________________________________
 //  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  MPL-2.0  :
 //:____________________________________________________________
-#ifndef H_mini_rules
-#define H_mini_rules
+#ifndef H_mini_passes
+#define H_mini_passes
 #include "./types.h"
 
 
-extern mini_cstring const mini_Keywords_ptr[mini_Keywords_len];
+void mini_parser_scope (mini_Parser* const P);
+void mini_parser_syntax (mini_Parser* const P);
 
 
 //______________________________________
 // @section Single Header Support
 //____________________________
 #ifdef mini_Implementation
-#define mini_Implementation_rules
+#define mini_Implementation_passes
 #endif  // mini_Implementation
-#ifdef mini_Implementation_rules
-#include "./rules.c"
-#endif  // mini_Implementation_rules
+#ifdef mini_Implementation_passes
+#include "./passes/syntax.c"
+#include "./passes/scope.c"
+#endif  // mini_Implementation_passes
 
 
-#endif  // H_mini_rules
+#endif  // H_mini_passes
 

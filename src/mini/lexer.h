@@ -4,6 +4,7 @@
 #ifndef H_mini_lexer
 #define H_mini_lexer
 
+
 //______________________________________
 // @section Single Header Support
 //____________________________
@@ -15,15 +16,13 @@
 #endif  // mini_Implementation_lexer
 //______________________________________
 #include <slate/lexer.h>
+#include "./types.h"
 
 
 //______________________________________
 // @section Lexer Aliases
 //____________________________
 
-typedef slate_Lexer       mini_Lexer;
-typedef slate_lexeme_List mini_lexeme_List;
-typedef slate_Lexeme      mini_Lexeme;
 #define mini_lexer_create  slate_lexer_create
 #define mini_lexer_process slate_lexer_process
 #define mini_lexer_report  slate_lexer_report

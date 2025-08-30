@@ -15,6 +15,12 @@ int main () {
   mini_tokenizer_process(&T);
   mini_tokenizer_report(&T);
 
+
+  mini_Parser P = mini_parser_create(&T);
+  mini_parser_process(&P);
+  mini_parser_report(&P);
+
+  mini_parser_destroy(&P);
   mini_tokenizer_destroy(&T);
   mini_lexer_destroy(&L);
   return 42;
