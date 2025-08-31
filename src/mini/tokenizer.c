@@ -129,6 +129,7 @@ void mini_tokenizer_report (
 // Single Lexeme Tokens: Singles
 // clang-format off
 static void mini_tokenizer_colon (mini_Tokenizer* const T) { mini_tokenizer_add(T, mini_token_sp_colon, T->buf.ptr[T->pos].loc); }
+static void mini_tokenizer_newline (mini_Tokenizer* const T) { mini_tokenizer_add(T, mini_token_wht_newline, T->buf.ptr[T->pos].loc); }
 // clang-format on
 
 
@@ -209,6 +210,7 @@ void mini_tokenizer_process (
       case slate_lexeme_identifier        : mini_tokenizer_identifier(T); break;
       case slate_lexeme_number            : mini_tokenizer_number(T); break;
       case slate_lexeme_whitespace        : mini_tokenizer_whitespace(T); break;
+      case slate_lexeme_newline           : mini_tokenizer_newline(T); break;
       case slate_lexeme_parenthesis_left  : /* fall-through */
       case slate_lexeme_parenthesis_right : mini_tokenizer_parenthesis(T); break;
       case slate_lexeme_colon             : mini_tokenizer_colon(T); break;
