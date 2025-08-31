@@ -4,7 +4,7 @@
 #ifndef H_mini_parser
 #define H_mini_parser
 #include "./passes.h"
-
+// #include "./parser/report.h"
 
 mini_Parser mini_parser_create (mini_Tokenizer const* const T);
 void        mini_parser_destroy (mini_Parser* const P);
@@ -18,7 +18,7 @@ void        mini_parser_process (mini_Parser* const P);
 #define mini_Implementation_parser
 #endif  // mini_Implementation
 #ifdef mini_Implementation_parser
-#include "./parser.c"
+#include "./parser/core.c"
 #endif  // mini_Implementation_parser
 
 

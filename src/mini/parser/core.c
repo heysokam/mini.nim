@@ -1,9 +1,9 @@
 //:____________________________________________________________
 //  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  MPL-2.0  :
 //:____________________________________________________________
-#include "./source.h"
-#include "./tokenizer.h"
-#include "./parser.h"
+// #include "../source.h"
+// #include "../tokenizer.h"
+#include "../parser.h"
 
 
 mini_Parser mini_parser_create (
@@ -47,10 +47,10 @@ void mini_parser_report (
   printf(".. Tokens ....................\n");
   for (mini_size id = 0; id < P->buf.len; ++id) {  // clang-format off
     mini_Token const tk = P->buf.ptr[id];
+    slate_source_Code code = slate_source_location_from(&tk.loc, P->src.ptr);
     printf("%02zu : Token.Id.%s : `%s`\t\t Depth(col:%zu, ind:%zu, id:%zu)\n",
-      id, mini_token_toString(tk.id),
-      mini_source_location_from(&tk.loc, P->src.ptr),
-      tk.depth.column, tk.depth.indentation, tk.depth.scope);
+      id, mini_token_toString(tk.id), code, tk.depth.column, tk.depth.indentation, tk.depth.scope);
+    free((void*)code);
   }  // clang-format on
   printf(".. Nodes .....................\n");
   for (mini_size id = 0; id < P->ast.nodes.len; ++id) {  // clang-format off
