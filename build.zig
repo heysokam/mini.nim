@@ -8,7 +8,6 @@ const confy = @import("confy");
 // @section Dependencies
 //____________________________
 const slate    = confy.dependency("slate",    "https://github.com/heysokam/slate",    .{.src= "src/C"});
-const minitest = confy.dependency("minitest", "https://github.com/heysokam/minitest", .{});
 
 
 //______________________________________
@@ -27,22 +26,24 @@ pub fn main() !void {
 
 
 //______________________________________
-// @section Dependencies
+// @section Unit Tests
 //____________________________
+// Dependencies
+const minitest = confy.dependency("minitest", "https://github.com/heysokam/minitest", .{});
+//__________________
+// Build+Run the tests
 fn tests_run () !void {
   var cfg     = confy.Cfg.defaults();
   cfg.dir.src = "tests";
+  cfg.quiet   = true;
+  const deps  = &.{slate, minitest};
   //__________________
   var t001 = try confy.UnitTest("001.general.c", .{
-    .trg  = "t001",
-    .cfg  = cfg,
-    .deps = &.{slate, minitest},
+    .trg= "t001", .cfg= cfg, .deps= deps,
   }); try t001.build(); try t001.run();
   //__________________
   var t002 = try confy.UnitTest("002.tokenizer.c", .{
-    .trg  = "t002",
-    .cfg  = cfg,
-    .deps = &.{slate, minitest},
+    .trg= "t002", .cfg= cfg, .deps= deps,
   }); try t002.build(); try t002.run();
 }
 
