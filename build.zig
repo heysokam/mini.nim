@@ -34,9 +34,15 @@ fn tests_run () !void {
   cfg.dir.src = "tests";
   //__________________
   var t001 = try confy.UnitTest("001.general.c", .{
-    .trg  = "t001_general",
+    .trg  = "t001",
     .cfg  = cfg,
     .deps = &.{slate, minitest},
   }); try t001.build(); try t001.run();
+  //__________________
+  var t002 = try confy.UnitTest("002.tokenizer.c", .{
+    .trg  = "t002",
+    .cfg  = cfg,
+    .deps = &.{slate, minitest},
+  }); try t002.build(); try t002.run();
 }
 
