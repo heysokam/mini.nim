@@ -1,6 +1,8 @@
 //:____________________________________________________________
 //  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  MPL-2.0  :
 //:____________________________________________________________
+#include "./source.h"
+#include "./tokenizer.h"
 #include "./parser.h"
 
 
@@ -42,7 +44,15 @@ void mini_parser_report (
 ) {
   printf("[mini.Parser] Contents ........................\n");
   printf("%s\n", P->src.ptr);
-  printf("..............................\n");
+  printf(".. Tokens ....................\n");
+  for (mini_size id = 0; id < P->buf.len; ++id) {  // clang-format off
+    mini_Token const tk = P->buf.ptr[id];
+    printf("%02zu : Token.Id.%s : `%s`\t\t Depth(col:%zu, ind:%zu, id:%zu)\n",
+      id, mini_token_toString(tk.id),
+      mini_source_location_from(&tk.loc, P->src.ptr),
+      tk.depth.column, tk.depth.indentation, tk.depth.scope);
+  }  // clang-format on
+  printf(".. Nodes .....................\n");
   for (mini_size id = 0; id < P->ast.nodes.len; ++id) {  // clang-format off
     printf(".: TODO :.\n");
     // printf("%02zu : Token.Id.%s : `%s`\n",
