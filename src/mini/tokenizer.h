@@ -8,7 +8,6 @@
 #include "./rules.h"
 
 
-
 #define mini_tokenizer_error(T, fmt, ...)                                                                   \
   do {                                                                                                      \
     mini_tokenizer_report(T);                                                                               \
@@ -17,6 +16,7 @@
   } while (0);
 
 
+mini_size    mini_token_len (mini_Token const* const tk);
 mini_cstring mini_token_toString (mini_token_Id const id);
 
 void mini_token_list_grow (mini_token_List* const list, mini_size const len);

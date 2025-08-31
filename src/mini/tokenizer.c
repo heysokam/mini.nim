@@ -59,7 +59,7 @@ void mini_tokenizer_add (
   mini_source_Location const loc
 ) {
   mini_token_list_grow(&T->res, 1);
-  T->res.ptr[T->res.len - 1] = (mini_Token){ .id = id, .loc = loc, .depth= mini_depth_empty() };
+  T->res.ptr[T->res.len - 1] = (mini_Token){ .id = id, .loc = loc, .depth = mini_depth_empty() };
 }
 
 
@@ -71,6 +71,13 @@ mini_bool mini_tokenizer_isKeyword (
     if (mini_source_location_equal(&lx->loc, T->src.ptr, mini_Keywords_ptr[id])) return mini_true;
   }
   return mini_false;
+}
+
+
+mini_size mini_token_len (
+  mini_Token const* const tk
+) {
+  return tk->loc.end - tk->loc.start + 1;
 }
 
 
@@ -122,7 +129,6 @@ void mini_tokenizer_report (
   }  // clang-format on
   printf("..................................................\n");
 }
-
 
 
 //____________________________________________
