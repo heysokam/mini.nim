@@ -4,34 +4,26 @@
 #include "./base.h"
 // clang-format off
 
-it("must parse the Hello42 case without errors", t001, {
-  // Setup
-  mini_cstring const src = Hello42_nim;
 
-  // Process
-  mini_Lexer L = mini_lexer_create(src);
-  mini_lexer_process(&L);
-  // mini_lexer_report(&L);
-
-  mini_Tokenizer T = mini_tokenizer_create(&L);
-  mini_tokenizer_process(&T);
-  // mini_tokenizer_report(&T);
-
-  mini_Parser P = mini_parser_create(&T);
-  mini_parser_process(&P);
-  // mini_parser_report(&P);
-
-  // Check
-  check(true, "Always pass");
-
-  // Cleanup
-  mini_parser_destroy(&P);
-  mini_tokenizer_destroy(&T);
-  mini_lexer_destroy(&L);
+it("must parse the Hello42 case without errors", t01, {
+  mini_test_parser_create(Hello42_nim);
+  mini_test_parser_destroy();
+  check(true, "Parsed Correctly");
 })
 
+it("must parse the HelloVar case without errors", t02, {
+  mini_test_parser_create(HelloVar_nim);
+  mini_test_parser_destroy();
+  check(true, "Parsed Correctly");
+})
+
+it("must parse the HelloVarStatement case without errors", t03, {
+  mini_test_parser_create(HelloVarStatement_nim);
+  mini_test_parser_destroy();
+  check(true, "Parsed Correctly");
+})
 
 describe("mini.nim | General Cases", {
-  return t001();
+  t01();t02();t03();
 })
 

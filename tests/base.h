@@ -5,3 +5,41 @@
 #define mini_Implementation
 #include "../src/mini.h"
 #include "./cases/includes.h"
+
+
+//______________________________________
+// @section Tests Helpers: Tokenizer
+//____________________________
+#define mini_test_tokenizer_create(case) /* clang-format off */ \
+  mini_cstring const src = case;                  \
+  mini_Lexer L = mini_lexer_create(src);          \
+  mini_lexer_process(&L);                         \
+  mini_Tokenizer T = mini_tokenizer_create(&L); { \
+  mini_tokenizer_process(&T);                     \
+  }  // clang-format on
+
+#define mini_test_tokenizer_destroy() do { /* clang-format off */ \
+  mini_tokenizer_destroy(&T);              \
+  mini_lexer_destroy(&L);                  \
+  } /* clang-format on */ while (0)
+
+
+//______________________________________
+// @section Tests Helpers: Parser
+//____________________________
+#define mini_test_parser_create(case) /* clang-format off */ \
+  mini_cstring const src = case;                 \
+  mini_Lexer L = mini_lexer_create(src);         \
+  mini_lexer_process(&L);                        \
+  mini_Tokenizer T = mini_tokenizer_create(&L);  \
+  mini_tokenizer_process(&T);                    \
+  mini_Parser P = mini_parser_create(&T);      { \
+  mini_parser_process(&P);                       \
+  }  // clang-format on
+
+#define mini_test_parser_destroy() do { /* clang-format off */ \
+  mini_parser_destroy(&P);              \
+  mini_tokenizer_destroy(&T);           \
+  mini_lexer_destroy(&L);               \
+  } /* clang-format on */ while (0)
+
