@@ -11,7 +11,13 @@
 static void mini_parser_scope_columnize (
   mini_Parser* const P
 ) {
-  (void)P;
+  mini_size column = 0;
+  for (mini_size id = 0; id < P->buf.len; ++id) {
+    mini_Token const tk         = P->buf.ptr[id];
+    P->buf.ptr[id].depth.column = column;     // Assign to this token
+    column += tk.loc.end - tk.loc.start + 1;  // Add the current len to the column value
+    if (tk.id == mini_token_wht_newline) column = 0;
+  }
 }
 
 
