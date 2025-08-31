@@ -124,8 +124,9 @@ void mini_tokenizer_report (
   printf("%s\n", T->src.ptr);
   printf("..............................\n");
   for (mini_size id = 0; id < T->res.len; ++id) {  // clang-format off
-    printf("%02zu : Token.Id.%s : `%s`\n",
-      id, mini_token_toString(T->res.ptr[id].id), mini_source_location_from(&T->res.ptr[id].loc, T->src.ptr));
+    mini_cstring code = mini_source_location_from(&T->res.ptr[id].loc, T->src.ptr);
+    printf("%02zu : Token.Id.%s : `%s`\n", id, mini_token_toString(T->res.ptr[id].id), code);
+    free((void*)code);
   }  // clang-format on
   printf("..................................................\n");
 }
