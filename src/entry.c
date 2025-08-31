@@ -9,12 +9,11 @@ mini_cstring const Hello42 = "proc main *() :int= return 42";
 int main () {
   mini_Lexer L = mini_lexer_create(Hello42);
   mini_lexer_process(&L);
-  mini_lexer_report(&L);
+  // mini_lexer_report(&L);
 
   mini_Tokenizer T = mini_tokenizer_create(&L);
   mini_tokenizer_process(&T);
-  mini_tokenizer_report(&T);
-
+  // mini_tokenizer_report(&T);
 
   mini_Parser P = mini_parser_create(&T);
   mini_parser_process(&P);
