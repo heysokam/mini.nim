@@ -30,14 +30,13 @@ pub fn main() !void {
 // @section Dependencies
 //____________________________
 fn tests_run () !void {
-  var cfg = confy.Cfg.defaults();
+  var cfg     = confy.Cfg.defaults();
   cfg.dir.src = "tests";
-  var target = try confy.UnitTest("001.general.c", .{
-    .trg  = "t_general",
+  //__________________
+  var t001 = try confy.UnitTest("001.general.c", .{
+    .trg  = "t001_general",
     .cfg  = cfg,
     .deps = &.{slate, minitest},
-  });
-  try target.build();
-  try target.run();
+  }); try t001.build(); try t001.run();
 }
 
