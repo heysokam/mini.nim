@@ -65,6 +65,7 @@ typedef enum mini_token_Id {
 } mini_token_Id;
 
 typedef slate_Depth mini_token_Scope;
+#define mini_depth_empty() (mini_token_Scope){.scope= slate_depth_scope_None }
 
 typedef struct mini_Token {
   mini_token_Id        id;

@@ -59,7 +59,7 @@ void mini_tokenizer_add (
   mini_source_Location const loc
 ) {
   mini_token_list_grow(&T->res, 1);
-  T->res.ptr[T->res.len - 1] = (mini_Token){ .id = id, .loc = loc };
+  T->res.ptr[T->res.len - 1] = (mini_Token){ .id = id, .loc = loc, .depth= mini_depth_empty() };
 }
 
 
