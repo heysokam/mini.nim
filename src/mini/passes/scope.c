@@ -43,7 +43,7 @@ static void mini_parser_scope_indentate_untilNewline (
 }
 
 static void mini_parser_scope_indentate_whitespace (
-  mini_Parser* const      P
+  mini_Parser* const P
 ) {
   while (P->pos < P->buf.len) {
     mini_Token const tk                  = P->buf.ptr[P->pos];
@@ -119,10 +119,92 @@ static void mini_parser_scope_indentate (
 // @section Parser.scope: Scope Identity
 //____________________________
 
+typedef struct mini_parser_scope_Stack {
+  slate_depth_Scope* ptr;
+  mini_size          len;
+  mini_size          cap;
+  slate_depth_Scope  last_id;
+} mini_parser_scope_Stack;
+
+static void mini_parser_scope_stack_destroy (
+  mini_parser_scope_Stack* const S
+) {
+  S->cap = 0;
+  S->len = 0;
+  if (S->ptr) free(S->ptr);
+}
+
+static void mini_parser_scope_stack_grow (
+  mini_parser_scope_Stack* const S,
+  mini_size const                len
+) {
+  mini_size const count = (S->len + len) - S->len;
+  S->len += len;
+  if (!S->cap) {
+    S->cap = len;
+    S->len = len;
+    S->ptr = (slate_depth_Scope*)malloc(S->cap * sizeof(*S->ptr));
+  } else if (S->len > S->cap) {
+    S->cap *= 2;
+    S->ptr = (slate_depth_Scope*)realloc(S->ptr, S->cap * sizeof(*S->ptr));
+  }
+  for (mini_size id = 0; id < count; ++id) S->ptr[S->len - id] = slate_depth_scope_None;
+}
+
+static void mini_parser_scope_stack_shrink (
+  mini_parser_scope_Stack* const S,
+  mini_size const                len
+) {
+  if (!S->len || !S->cap) return;
+  mini_size const count = S->len - (S->len - len);
+  for (mini_size id = 0; id < count; ++id) S->ptr[S->len - id] = slate_depth_scope_None;
+  S->len -= len;
+}
+
+#define mini_parser_scope_stack_last(sc) sc.ptr[sc.len - 1]
+
+static slate_depth_Scope mini_parser_scope_stack_next (
+  mini_parser_scope_Stack* const S
+) {
+  slate_depth_Scope result = (S->last_id == slate_depth_scope_None) ? 0 : (S->last_id + 1);
+  S->last_id               = result;
+  return result;
+}
+
+static void mini_parser_scope_stack_add (
+  mini_parser_scope_Stack* const S
+) {
+  mini_parser_scope_stack_grow(S, 1);
+  S->ptr[S->len - 1] = mini_parser_scope_stack_next(S);
+}
+
+static slate_depth_Scope mini_parser_scope_stack_remove (
+  mini_parser_scope_Stack* const S
+) {
+  slate_depth_Scope result = S->ptr[S->len - 1];
+  mini_parser_scope_stack_shrink(S, 1);
+  return result;
+}
+
 static void mini_parser_scope_identify (
   mini_Parser* const P
 ) {
-  (void)P;
+  // Initialize the scopes list
+  mini_parser_scope_Stack scopes = (mini_parser_scope_Stack){ .last_id = slate_depth_scope_None };
+  mini_parser_scope_stack_add(&scopes);
+  slate_depth_Level indent_last = P->buf.ptr[P->pos].depth.indentation;
+  // Apply scope to all tokens
+  while (P->pos < P->buf.len) {
+    mini_Token const tk = P->buf.ptr[P->pos];
+    if (tk.depth.indentation > indent_last) mini_parser_scope_stack_add(&scopes);
+    else if (tk.depth.indentation < indent_last) mini_parser_scope_stack_remove(&scopes);
+    indent_last                    = tk.depth.indentation;
+    P->buf.ptr[P->pos].depth.scope = mini_parser_scope_stack_last(scopes);
+    P->pos += 1;
+  }
+  P->pos -= 1;
+  // Cleanup when done
+  mini_parser_scope_stack_destroy(&scopes);
 }
 
 
