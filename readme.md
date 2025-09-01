@@ -86,9 +86,11 @@ arr[x] = y              # Store value
 y = arr[x]              # Retrieve value
 ```
 ### 8. Quality of Life features
-#### Includes
 #### Functions
+_note: Implemented to describe a main function_
+_Could be avoided by treating the entire file as the body of the main function._
 #### Comments
+#### Includes
 
 ## Differences with Nim
 `mini.nim` has its own compiler pipeline, written from scratch.  
@@ -97,11 +99,13 @@ this compiler generates human-readable C code.
 
 ## Differences with [Minim](https://github.com/heysokam/minim)
 ### Design
-The architecture and design of `minim` is the exact same as `mini.nim`,  
+The architecture of `minim` is the exact same as `mini.nim`,  
 but this compiler is heavily restricted to the most minimal subset of the language possible.  
 _I'd recommend using `minim` instead for any mildly complex projects._  
 `mini.nim` aims to be as minimal as humanly possible, by design.  
 ### Implementation
 While Minim is written in Zig, this compiler is written in pure C.  
-Both Minim's and `mini.nim`'s compiler architecture have minimal allocations and use Data Oriented Design heavily.  
+Minim has minimal allocations and uses Data Oriented Design.  
+`mini.nim`, on the other hand, freely allocates memory inside each object field that represents either a list or a list-of-lists.  
+_eg: Proc.arguments_ 
 
