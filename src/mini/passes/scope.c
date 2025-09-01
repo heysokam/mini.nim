@@ -201,9 +201,9 @@ static void mini_parser_scope_identify (
     P->buf.ptr[P->pos].depth.scope = mini_parser_scope_stack_last(scopes);
     P->pos += 1;
   }
-  P->pos -= 1;
   // Cleanup when done
   mini_parser_scope_stack_destroy(&scopes);
+  P->pos = 0;
 }
 
 
