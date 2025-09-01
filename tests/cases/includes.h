@@ -20,6 +20,10 @@ char const HelloVarStatement_nim[] = {
 #embed "./03_helloVarStatement.nim"
 };
 
+char const HelloIndentation_nim[] = {
+#embed "./04_helloIndentation.nim"
+};
+
 #pragma GCC diagnostic pop
 #endif  // H_tests_cases_includes
 

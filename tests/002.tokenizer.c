@@ -29,7 +29,18 @@ it("must tokenize the HelloVarStatement case without errors", t03, {
 })
 
 
-describe("mini.nim | Tokenizer Cases", {
-  t01();t02();t03();
+it("must tokenize the HelloIndentation case without errors", t04, {
+  mini_test_tokenizer_create(HelloIndentation_nim);
+  mini_test_tokenizer_destroy();
+  // TODO: Check Output
+  check(true, "Tokenized Correctly");
 })
+
+
+describe("mini.nim | Tokenizer Cases", { return !(
+  t01() &&
+  t02() &&
+  t03() &&
+  t04()
+);})
 

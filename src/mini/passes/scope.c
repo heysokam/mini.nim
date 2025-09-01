@@ -102,7 +102,6 @@ static void mini_parser_scope_indentate (
   while (P->pos < P->buf.len) {
     mini_Token const tk = P->buf.ptr[P->pos];
     switch (tk.id) {
-      // case mini_token_wht_newline : break;
       case mini_token_kw_proc     : mini_parser_scope_indentate_proc(P); break;
       case mini_token_kw_var      : mini_parser_scope_indentate_var(P); break;
       case mini_token_wht_space   : /* fall-through */

@@ -35,7 +35,6 @@ const minitest = confy.dependency("minitest", "https://github.com/heysokam/minit
 fn tests_run () !void {
   var cfg     = confy.Cfg.defaults();
   cfg.dir.src = "tests";
-  cfg.quiet   = true;
   const deps  = &.{slate, minitest};
   //__________________
   var t001 = try confy.UnitTest("001.general.c", .{
@@ -45,5 +44,9 @@ fn tests_run () !void {
   var t002 = try confy.UnitTest("002.tokenizer.c", .{
     .trg= "t002", .cfg= cfg, .deps= deps,
   }); try t002.build(); try t002.run();
+  //__________________
+  var t003 = try confy.UnitTest("003.parser.c", .{
+    .trg= "t003", .cfg= cfg, .deps= deps,
+  }); try t003.build(); try t003.run();
 }
 
