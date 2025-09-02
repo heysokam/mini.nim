@@ -58,6 +58,8 @@ void mini_parser_report (
     // printf("%02zu : Token.Id.%s : `%s`\n",
     //   id, mini_token_toString(T->res.ptr[id].id), mini_source_location_from(&T->res.ptr[id].loc, T->src.ptr));
   }  // clang-format on
+  printf(".. Others ....................\n");
+  printf("  P.pos: %zu\n", P->pos);
   printf("..................................................\n");
 }
 
