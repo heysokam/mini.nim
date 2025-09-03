@@ -11,6 +11,7 @@
 // @section Base Types
 //____________________________
 
+typedef char mini_char;
 typedef bool mini_bool;
 enum { mini_false, mini_true };
 typedef void*                 mini_pointer;
@@ -22,6 +23,11 @@ typedef struct mini_List {
   mini_size    len;
   mini_size    cap;
 } mini_List;
+typedef struct mini_string {
+  mini_char* ptr;
+  mini_size  len;
+  mini_size  cap;
+} mini_string;
 
 
 //______________________________________
@@ -211,6 +217,16 @@ typedef struct mini_Parser {
   mini_parser_Pos pos;
   mini_Ast        ast;
 } mini_Parser;
+
+
+//______________________________________
+// @section Codegen Types
+//____________________________
+
+typedef struct mini_Module {
+  mini_string c;
+  mini_string h;
+} mini_Module;
 
 
 #endif  // H_mini_types

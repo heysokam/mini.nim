@@ -11,4 +11,5 @@
 #include "./mini/rules.h"
 #include "./mini/tokenizer.h"
 #include "./mini/parser.h"
+#include "./mini/codegen.h"
 #endif  // H_mini

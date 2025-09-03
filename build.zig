@@ -48,5 +48,9 @@ fn tests_run () !void {
   var t003 = try confy.UnitTest("003.parser.c", .{
     .trg= "t003", .cfg= cfg, .deps= deps,
   }); try t003.build(); try t003.run();
+  //__________________
+  var t004 = try confy.UnitTest("004.codegen.c", .{
+    .trg= "t004", .cfg= cfg, .deps= deps,
+  }); try t004.build(); try t004.run();
 }
 
