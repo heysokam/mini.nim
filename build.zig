@@ -7,7 +7,7 @@ const confy = @import("confy");
 //______________________________________
 // @section Dependencies
 //____________________________
-const slate    = confy.dependency("slate",    "https://github.com/heysokam/slate",    .{.src= "src/C"});
+const slate = confy.dependency("slate", "https://github.com/heysokam/slate", .{.src= "src/C"});
 
 
 //______________________________________
@@ -21,7 +21,7 @@ pub fn main() !void {
 
   try tests_run();
   try mini.build();
-  try mini.run();
+  // try mini.run();
 }
 
 
@@ -35,7 +35,7 @@ const minitest = confy.dependency("minitest", "https://github.com/heysokam/minit
 fn tests_run () !void {
   var cfg     = confy.Cfg.defaults();
   cfg.dir.src = "tests";
-  const deps  = &.{slate, minitest};
+  const deps  = &.{minitest, slate};
   //__________________
   var t001 = try confy.UnitTest("001.general.c", .{
     .trg= "t001", .cfg= cfg, .deps= deps,
