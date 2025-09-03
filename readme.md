@@ -1,6 +1,9 @@
-# mini.nim | Minimalist subset of Nim
-> What is the most minimal set of Nim features
-> that would achieve a Turing Complete language?
+# mini.nim | Hyper-Minimalist subset of Nim
+> What is the most minimal set of Nim features  
+> that would achieve a Turing Complete language?  
+
+`mini.nim` is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) inspired by the [Nim programming language](https://nim-lang.org),
+that aims to reduce Nim's syntax to its absolute core minimum set of features.
 
 ## TODO
 ```md
@@ -22,6 +25,12 @@
     - [ ] Identifier
 - [ ] Comments
 ```
+## Inspiration
+Its arguable whether a language like `mini.nim` can be considered a [Turing Tarpit](https://esolangs.org/wiki/Turing_tarpit) or not.  
+But the intention is to stay as close as possible to the hyper-minimalist goals of tarpits either way.  
+
+As an [esolang](https://esolangs.org/wiki/Esoteric_programming_language), `mini.nim` was not created to be comfortable to use.  
+The goal, instead, is to explore the concept of hyper-minimalism within the confines of a modern programming language.  
 
 ## Turing Completeness
 Turing Completeness, as understood by this language, can be achieved by:
@@ -101,11 +110,11 @@ this compiler generates human-readable C code.
 ### Design
 The architecture of `minim` is the exact same as `mini.nim`,  
 but this compiler is heavily restricted to the most minimal subset of the language possible.  
-_I'd recommend using `minim` instead for any mildly complex projects._  
 `mini.nim` aims to be as minimal as humanly possible, by design.  
+_I'd recommend using `minim` instead for any mildly complex projects._  
 ### Implementation
 While Minim is written in Zig, this compiler is written in pure C.  
 Minim has minimal allocations and uses Data Oriented Design.  
-`mini.nim`, on the other hand, freely allocates memory inside each object field that represents either a list or a list-of-lists.  
-_eg: Proc.arguments_ 
+`mini.nim`, instead, freely allocates memory inside each object field that represents either a list or a list-of-lists.  
+_eg: Statement.List, Node.List, Token.List, etc_
 
