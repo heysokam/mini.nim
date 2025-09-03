@@ -13,9 +13,15 @@
 
 typedef bool mini_bool;
 enum { mini_false, mini_true };
+typedef void*                 mini_pointer;
 typedef slate_size            mini_size;
 typedef slate_cstring         mini_cstring;
 typedef slate_source_Location mini_source_Location;
+typedef struct mini_List {
+  mini_pointer ptr;
+  mini_size    len;
+  mini_size    cap;
+} mini_List;
 
 
 //______________________________________

@@ -2,6 +2,7 @@
 //  mini.nim  |  Copyright (C) Ivan Mar (sOkam!)  |  MPL-2.0  :
 //:____________________________________________________________
 #include "./source.h"
+#include "./list.h"
 #include "./tokenizer.h"
 
 
@@ -37,28 +38,12 @@ void mini_tokenizer_destroy (
 }
 
 
-void mini_token_list_grow (
-  mini_token_List* const list,
-  mini_size const        len
-) {
-  list->len += len;
-  if (!list->cap) {
-    list->cap = len;
-    list->len = len;
-    list->ptr = (mini_Token*)malloc(list->cap * sizeof(*list->ptr));
-  } else if (list->len > list->cap) {
-    list->cap *= 2;
-    list->ptr = (mini_Token*)realloc(list->ptr, list->cap * sizeof(*list->ptr));
-  }
-}
-
-
 void mini_tokenizer_add (
   mini_Tokenizer* const      T,
   mini_token_Id const        id,
   mini_source_Location const loc
 ) {
-  mini_token_list_grow(&T->res, 1);
+  mini_list_grow((mini_List*)&T->res, 1, sizeof(*T->res.ptr));
   T->res.ptr[T->res.len - 1] = (mini_Token){ .id = id, .loc = loc, .depth = mini_depth_empty() };
 }
 
