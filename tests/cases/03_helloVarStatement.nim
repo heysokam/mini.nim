@@ -1,4 +1,4 @@
 proc main *() :int=
-  var hello = 42
+  var hello :int= 42
   return 42
 
