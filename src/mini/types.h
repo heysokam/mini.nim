@@ -71,7 +71,8 @@ typedef enum mini_token_Id {
 } mini_token_Id;
 
 typedef slate_Depth mini_token_Scope;
-#define mini_depth_empty() (mini_token_Scope){.scope= slate_depth_scope_None }
+#define mini_depth_empty() \
+  (mini_token_Scope) { .scope = slate_depth_scope_None }
 
 typedef struct mini_Token {
   mini_token_Id        id;
@@ -104,12 +105,79 @@ typedef struct mini_Tokenizer {
 
 
 //______________________________________
-// @section Parser Types
+// @section AST Types
 //____________________________
 
-typedef mini_size mini_parser_Pos;
 
-typedef char mini_Node; // FIX: TODO
+typedef mini_source_Location mini_Identifier;
+typedef enum mini_Visibility { mini_private, mini_public } mini_Visibility;
+typedef enum mini_Mutability { mini_immutable, mini_mutable } mini_Mutability;
+
+typedef struct mini_literal_Number {
+  mini_source_Location value;
+} mini_literal_Number;
+
+typedef union mini_Literal {
+  mini_literal_Number number;
+} mini_Literal;
+
+typedef enum mini_expression_Kind { mini_expression_literal, mini_expression_identifier } mini_expression_Kind;
+typedef union mini_expression_Data {
+  mini_Literal    literal;
+  mini_Identifier identifier;
+} mini_expression_Data;
+
+typedef struct mini_Expression {
+  mini_expression_Kind kind;
+  mini_expression_Data data;
+} mini_Expression;
+
+typedef struct mini_Var {
+  mini_source_Location name;
+  mini_source_Location type;
+  mini_Expression      value;
+  mini_bool            Mutable;
+  mini_bool            runtime;
+  mini_Visibility      visibility;
+} mini_Var;
+
+typedef struct mini_Return {
+  mini_Expression value;
+} mini_Return;
+
+typedef union mini_statement_Data {
+  mini_Var    var;
+  mini_Return Return;
+} mini_statement_Data;
+
+typedef enum mini_statement_Kind { mini_statement_var, mini_statement_assignment, mini_statement_return } mini_statement_Kind;
+typedef struct mini_Statement {
+  mini_statement_Kind kind;
+  mini_statement_Data data;
+} mini_Statement;
+
+typedef struct mini_statement_List {
+  mini_Statement* ptr;
+  mini_size       len;
+  mini_size       cap;
+} mini_statement_List;
+
+typedef struct mini_Proc {
+  mini_source_Location name;
+  mini_source_Location return_type;
+  mini_Visibility      visibility;
+  mini_statement_List  body;
+} mini_Proc;
+
+typedef enum mini_node_Kind { mini_node_proc, mini_node_var } mini_node_Kind;
+typedef union mini_node_Data {
+  mini_Var  var;
+  mini_Proc proc;
+} mini_node_Data;
+typedef struct mini_Node {
+  mini_node_Kind kind;
+  mini_node_Data data;
+} mini_Node;
 
 typedef struct mini_node_List {
   mini_Node* ptr;
@@ -117,9 +185,22 @@ typedef struct mini_node_List {
   mini_size  cap;
 } mini_node_List;
 
+typedef enum mini_Lang { mini_lang_C } mini_Lang;
 typedef struct mini_Ast {
   mini_node_List nodes;
+  mini_Lang      lang;
+  struct {
+    slate_source_Code ptr;
+    mini_size         len;
+  } src;
 } mini_Ast;
+
+
+//______________________________________
+// @section Parser Types
+//____________________________
+
+typedef mini_size mini_parser_Pos;
 
 typedef struct mini_Parser {
   struct {
