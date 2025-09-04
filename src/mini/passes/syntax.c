@@ -28,15 +28,29 @@ static void mini_parser_syntax_statement_list_add (
 // @section Parse Syntax: Expressions
 //____________________________
 
+
+static mini_Literal mini_parser_syntax_expression_literal_number (
+  mini_Parser* const P
+) {
+  return (mini_Literal) /* clang-format off */ {
+    .kind      = mini_literal_number,
+    .data      = (mini_literal_Data){
+      .number  = (mini_literal_Number){
+        .value = P->buf.ptr[P->pos].loc,
+      }, //:: result.data.number
+    }, //:: result.data
+  };  // clang-format on
+}
+
 static mini_Expression mini_parser_syntax_expression_literal (
   mini_Parser* const P
 ) {
   mini_parser_expect_any(P, 1, (mini_token_Id[]){ mini_token_b_number });
-  mini_Expression result = (mini_Expression) /* clang-format off */ {
-    .kind    = mini_expression_literal,
-    .data    = (mini_expression_Data){.literal= (mini_Literal){.number= (mini_literal_Number){
-      .value = P->buf.ptr[P->pos].loc,
-    }}}
+  mini_Expression const result /* clang-format off */ = (mini_Expression) {
+    .kind          = mini_expression_literal,
+    .data          = (mini_expression_Data){
+      .literal     = mini_parser_syntax_expression_literal_number(P), //:: result.data.literal
+    } //:: result.data
   };  // clang-format on
   P->pos += 1;
   if (P->buf.ptr[P->pos].id == mini_token_wht_space) P->pos += 1;
