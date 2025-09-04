@@ -186,7 +186,8 @@ static void mini_codegen_c_proc_body (
 static void mini_codegen_c_proc (
   mini_Codegen* const C
 ) {
-  mini_Proc const    proc    = C->ast.nodes.ptr[C->pos].data.proc;
+  mini_Proc const proc = C->ast.nodes.ptr[C->pos].data.proc;
+  if (proc.visibility == mini_private) mini_string_add(&C->res.c, "static ");
   mini_cstring const returnT = slate_source_location_from(&proc.return_type, C->ast.src.ptr);
   mini_string_add(&C->res.c, returnT);
   mini_string_add(&C->res.c, " ");

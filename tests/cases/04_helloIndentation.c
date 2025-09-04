@@ -1,4 +1,4 @@
-int thing () {
+static int thing () {
   int hello = 42;
   return 21;
 }
