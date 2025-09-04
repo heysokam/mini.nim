@@ -4,33 +4,33 @@
 #include "./base.h"
 // clang-format off
 
+
 it("must generate the expected C code for the Hello42 case", t01, {
   mini_test_codegen_create(Hello42);
+  mini_test_codegen_check(Hello42);
   mini_test_codegen_destroy();
-  check(true, "Code Generated Correctly");
-  check(false, "TODO");
 })
 
 
 /*
 it("must generate the expected C code for the HelloVar", t02, {
-  mini_test_codegen_create(HelloVar_nim);
+  mini_test_codegen_create(HelloVar);
+  mini_test_codegen_check(HelloVar);
   mini_test_codegen_destroy();
-  check(true, "Code Generated Correctly");
 })
 
 
 it("must generate the expected C code for the HelloVarStatement", t03, {
-  mini_test_codegen_create(HelloVarStatement_nim);
+  mini_test_codegen_create(HelloVarStatement);
+  mini_test_codegen_check(HelloVarStatement);
   mini_test_codegen_destroy();
-  check(true, "Code Generated Correctly");
 })
 
 
 it("must generate the expected C code for the HelloIndentation", t04, {
-  mini_test_codegen_create(HelloIndentation_nim);
+  mini_test_codegen_create(HelloIndentation);
+  mini_test_codegen_check(HelloIndentation);
   mini_test_codegen_destroy();
-  check(true, "Code Generated Correctly");
 })
 */
 

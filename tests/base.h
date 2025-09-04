@@ -55,14 +55,21 @@
   mini_tokenizer_process(&T);                    \
   mini_Parser P = mini_parser_create(&T);        \
   mini_parser_process(&P);                       \
-  mini_Module const result = mini_codegen(&P);   \
+  mini_Codegen C = mini_codegen_create(&P);      \
+  mini_codegen_process(&C);                      \
+  mini_Module const result = C.res;              \
   mini_cstring const expected_c = case##_c;      \
   mini_cstring const expected_h = case##_h;      \
   (void)0  // clang-format on
 
 #define mini_test_codegen_destroy()      /* clang-format off */ do { \
+  mini_codegen_destroy(&C);             \
   mini_parser_destroy(&P);              \
   mini_tokenizer_destroy(&T);           \
   mini_lexer_destroy(&L);               \
   } /* clang-format on */ while (0)
+
+#define mini_test_codegen_check(test_case)                                                                                     \
+  check(mini_cstring_equal(result.h.ptr, expected_h), ".h code for the " #test_case " case could not be generated correctly"); \
+  check(mini_cstring_equal(result.c.ptr, expected_c), ".c code for the " #test_case " case could not be generated correctly");
 
