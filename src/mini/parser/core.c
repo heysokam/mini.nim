@@ -14,6 +14,7 @@ mini_Parser mini_parser_create (
     .pos = 0,
     .src = { .ptr = T->src.ptr, .len = T->src.len },
     .buf = { .ptr = NULL, .len = T->res.len, .cap = T->res.cap },
+    .ast = { .src = { .ptr = T->src.ptr, .len = T->src.len } }
   };
   mini_size size = result.buf.cap * sizeof(*T->res.ptr);
   result.buf.ptr = malloc(size);
