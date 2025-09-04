@@ -9,7 +9,6 @@
 mini_Parser mini_parser_create (
   mini_Tokenizer const* const T
 ) {
-  (void)T;
   mini_Parser result = (mini_Parser){
     .pos = 0,
     .src = { .ptr = T->src.ptr, .len = T->src.len },

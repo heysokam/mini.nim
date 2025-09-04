@@ -12,7 +12,6 @@ it("must generate the expected C code for the Hello42 case", t01, {
 })
 
 
-/*
 it("must generate the expected C code for the HelloVar", t02, {
   mini_test_codegen_create(HelloVar);
   mini_test_codegen_check(HelloVar);
@@ -32,13 +31,12 @@ it("must generate the expected C code for the HelloIndentation", t04, {
   mini_test_codegen_check(HelloIndentation);
   mini_test_codegen_destroy();
 })
-*/
+
 
 describe("mini.nim | Codegen Cases", { return !(
-  // t01() &&
-  // t02() &&
-  // t03() &&
-  // t04()
-  t01()
+  t01() &&
+  t02() &&
+  t03() &&
+  t04()
 );})
 

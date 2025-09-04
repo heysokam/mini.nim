@@ -69,7 +69,11 @@
   mini_lexer_destroy(&L);               \
   } /* clang-format on */ while (0)
 
-#define mini_test_codegen_check(test_case)                                                                                     \
-  check(mini_cstring_equal(result.h.ptr, expected_h), ".h code for the " #test_case " case could not be generated correctly"); \
-  check(mini_cstring_equal(result.c.ptr, expected_c), ".c code for the " #test_case " case could not be generated correctly");
+#define mini_test_codegen_check(test_case)                                                                                   \
+  mini_bool const h_equal = mini_cstring_equal(result.h.ptr, expected_h);                                                    \
+  if (!h_equal) printf(".............. Expected:\n%s\n............ Result:\n%s\n.............\n", expected_h, result.h.ptr); \
+  check(h_equal, ".h code for the " #test_case " case could not be generated correctly");                                    \
+  mini_bool const c_equal = mini_cstring_equal(result.c.ptr, expected_c);                                                    \
+  if (!c_equal) printf(".............. Expected:\n%s\n............ Result:\n%s\n.............\n", expected_c, result.c.ptr); \
+  check(c_equal, ".c code for the " #test_case " case could not be generated correctly");
 

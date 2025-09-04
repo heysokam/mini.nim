@@ -124,9 +124,17 @@ static void mini_codegen_c_expression (
 
 static void mini_codegen_c_statement_var (
   mini_Codegen* const         C,
-  mini_Statement const* const var
+  mini_Statement const* const statement
 ) {
-  mini_string_add(&C->res.c, "TODO:var");
+  mini_Var const     var  = statement->data.var;
+  mini_cstring const type = slate_source_location_from(&var.type, C->ast.src.ptr);
+  mini_string_add(&C->res.c, type);
+  mini_string_add(&C->res.c, " ");
+  if (!var.Mutable) mini_string_add(&C->res.c, "const ");
+  mini_cstring name = slate_source_location_from(&var.name, C->ast.src.ptr);
+  mini_string_add(&C->res.c, name);
+  mini_string_add(&C->res.c, " = ");
+  mini_codegen_c_expression(C, &var.value);
 }
 
 static void mini_codegen_c_statement_return (
@@ -162,7 +170,7 @@ static void mini_codegen_c_statement (
 static void mini_codegen_c_proc_body (
   mini_Codegen* const C
 ) {
-  mini_Proc const proc           = C->ast.nodes.ptr[0].data.proc;
+  mini_Proc const proc           = C->ast.nodes.ptr[C->pos].data.proc;
   mini_size const statements_len = proc.body.len;
   mini_bool const oneline        = statements_len == 1;
   mini_string_add(&C->res.c, "{");
@@ -178,10 +186,11 @@ static void mini_codegen_c_proc_body (
 static void mini_codegen_c_proc (
   mini_Codegen* const C
 ) {
-  mini_cstring returnT = slate_source_location_from(&C->ast.nodes.ptr[C->pos].data.proc.return_type, C->ast.src.ptr);
+  mini_Proc const    proc    = C->ast.nodes.ptr[C->pos].data.proc;
+  mini_cstring const returnT = slate_source_location_from(&proc.return_type, C->ast.src.ptr);
   mini_string_add(&C->res.c, returnT);
   mini_string_add(&C->res.c, " ");
-  mini_cstring name = slate_source_location_from(&C->ast.nodes.ptr[C->pos].data.proc.name, C->ast.src.ptr);
+  mini_cstring const name = slate_source_location_from(&proc.name, C->ast.src.ptr);
   mini_string_add(&C->res.c, name);
   mini_string_add(&C->res.c, " ");
   mini_string_add(&C->res.c, "()");  // TODO: Args
@@ -194,11 +203,11 @@ static void mini_codegen_c_var (
 ) {
   mini_Var const var = C->ast.nodes.ptr[C->pos].data.var;
   if (var.visibility == mini_private) mini_string_add(&C->res.c, "static ");
-  mini_cstring type = slate_source_location_from(&var.type, C->ast.src.ptr);
+  mini_cstring const type = slate_source_location_from(&var.type, C->ast.src.ptr);
   mini_string_add(&C->res.c, type);
   mini_string_add(&C->res.c, " ");
   if (!var.Mutable) mini_string_add(&C->res.c, "const ");
-  mini_cstring name = slate_source_location_from(&var.name, C->ast.src.ptr);
+  mini_cstring const name = slate_source_location_from(&var.name, C->ast.src.ptr);
   mini_string_add(&C->res.c, name);
   mini_string_add(&C->res.c, " = ");
   mini_codegen_c_expression(C, &var.value);
@@ -233,10 +242,11 @@ static void mini_codegen_c (
 mini_Codegen mini_codegen_create (
   mini_Parser const* const P
 ) {
-  return (mini_Codegen){
+  mini_Codegen result = (mini_Codegen){
     .pos = 0,
     .ast = P->ast,
   };
+  return result;
 }
 
 void mini_codegen_destroy (

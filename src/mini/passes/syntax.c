@@ -83,7 +83,10 @@ static mini_Var mini_parser_syntax_statement_var (
   mini_parser_expect(P, mini_token_kw_var);
   P->pos += 1;
   // Create the result
-  mini_Var result = (mini_Var){ 0 };
+  mini_Var result = (mini_Var){
+    .Mutable = mini_true, // FIX: let vs var
+    .runtime = mini_true, // FIX: (let/var) vs const
+  };
   // Continue parsing the var
   mini_parser_expect(P, mini_token_wht_space);
   P->pos += 1;
