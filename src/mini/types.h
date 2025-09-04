@@ -29,6 +29,8 @@ typedef struct mini_string {
   mini_size  cap;
 } mini_string;
 
+#define mini_cstring_equal slate_cstring_equal
+
 
 //______________________________________
 // @section Lexer Types
@@ -123,8 +125,14 @@ typedef struct mini_literal_Number {
   mini_source_Location value;
 } mini_literal_Number;
 
-typedef union mini_Literal {
+typedef enum mini_literal_Kind { mini_literal_number, /* mini_literal_char */ } mini_literal_Kind;
+typedef union mini_literal_Data {
   mini_literal_Number number;
+} mini_literal_Data;
+
+typedef struct mini_Literal {
+  mini_literal_Kind kind;
+  mini_literal_Data data;
 } mini_Literal;
 
 typedef enum mini_expression_Kind { mini_expression_literal, mini_expression_identifier } mini_expression_Kind;
@@ -149,14 +157,21 @@ typedef struct mini_Var {
 
 typedef struct mini_Return {
   mini_Expression value;
+  mini_bool       empty;
 } mini_Return;
+
+typedef struct mini_Assign {
+  mini_source_Location name;
+  mini_Expression      value;
+} mini_Assign;
 
 typedef union mini_statement_Data {
   mini_Var    var;
   mini_Return Return;
+  mini_Assign assign;
 } mini_statement_Data;
 
-typedef enum mini_statement_Kind { mini_statement_var, mini_statement_assignment, mini_statement_return } mini_statement_Kind;
+typedef enum mini_statement_Kind { mini_statement_var, mini_statement_assign, mini_statement_return } mini_statement_Kind;
 typedef struct mini_Statement {
   mini_statement_Kind kind;
   mini_statement_Data data;
@@ -223,10 +238,22 @@ typedef struct mini_Parser {
 // @section Codegen Types
 //____________________________
 
+typedef mini_size mini_codegen_Pos;
+
 typedef struct mini_Module {
+  struct {
+    mini_size    len;
+    mini_cstring ptr;
+  } src;
   mini_string c;
   mini_string h;
 } mini_Module;
+
+typedef struct mini_Codegen {
+  mini_Ast         ast;
+  mini_codegen_Pos pos;
+  mini_Module      res;
+} mini_Codegen;
 
 
 #endif  // H_mini_types
