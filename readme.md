@@ -8,15 +8,15 @@ that aims to reduce Nim's syntax to its absolute core minimum set of features.
 ## TODO
 ```md
 # Required
-- [ ] Literal Value (int)
-- [ ] State (variables/assignment)
+- [x] Literal Value (int)
+- [x] State (variables/assignment)
 - [ ] Assignment and basic arithmetic (+ and -)
 - [ ] Operations to check conditions (== and !=)
 - [ ] Conditional Execution (if statements)
 - [ ] Looping Construct (while)
 - [ ] Unbounded Memory (conceptually): (arrays)
 # Nim Inherited
-- [ ] Meaningful Indentation
+- [x] Meaningful Indentation
 # Quality of Life features
 - [ ] Includes
 - [ ] Functions
