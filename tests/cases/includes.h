@@ -77,6 +77,23 @@ char const HelloIndentation_h[] = {
 // clang-format on
 
 
+//______________________________________
+// @section ExprIdentifier
+//____________________________
+
+// clang-format off
+char const ExprIdentifier_nim[] = {
+#embed "./05_exprIdentifier.nim" suffix(,)
+0};
+char const ExprIdentifier_c[] = {
+#embed "./05_exprIdentifier.c" suffix(,)
+0};
+char const ExprIdentifier_h[] = {
+#embed "./05_exprIdentifier.h" suffix(,)
+0};
+// clang-format on
+
+
 #pragma GCC diagnostic pop
 #endif  // H_tests_cases_includes
 

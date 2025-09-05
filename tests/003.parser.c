@@ -33,10 +33,18 @@ it("must parse the HelloIndentation case without errors", t04, {
 })
 
 
+it("must parse the ExprIdentifier case without errors", t05, {
+  mini_test_parser_create(ExprIdentifier);
+  mini_test_parser_destroy();
+  check(true, "Parsed Correctly");
+})
+
+
 describe("mini.nim | Parser Cases", { return !(
   t01() &&
   t02() &&
   t03() &&
-  t04()
+  t04() &&
+  t05()
 );})
 

@@ -37,10 +37,18 @@ it("must tokenize the HelloIndentation case without errors", t04, {
 })
 
 
+it("must tokenize the ExprIdentifier case without errors", t05, {
+  mini_test_tokenizer_create(ExprIdentifier);
+  mini_test_tokenizer_destroy();
+  check(true, "Tokenized Correctly");
+})
+
+
 describe("mini.nim | Tokenizer Cases", { return !(
   t01() &&
   t02() &&
   t03() &&
-  t04()
+  t04() &&
+  t05()
 );})
 

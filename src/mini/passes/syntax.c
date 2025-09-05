@@ -60,15 +60,33 @@ static mini_Expression mini_parser_syntax_expression_literal (
   return result;
 }
 
+static mini_Expression mini_parser_syntax_expression_identifier (
+  mini_Parser* const P
+) {
+  mini_parser_expect(P, mini_token_b_identifier);
+  mini_Expression const result /* clang-format off */ = (mini_Expression) {
+    .kind          = mini_expression_identifier,
+    .data          = (mini_expression_Data){
+      .identifier  = P->buf.ptr[P->pos].loc,
+    } //:: result.data
+  };  // clang-format on
+  P->pos += 1;
+  if (P->buf.ptr[P->pos].id == mini_token_wht_space) P->pos += 1;
+  if (P->buf.ptr[P->pos].id == mini_token_sp_semicolon) P->pos += 1;
+  if (P->buf.ptr[P->pos].id == mini_token_wht_space) P->pos += 1;
+  if (P->buf.ptr[P->pos].id == mini_token_wht_newline) P->pos += 1;
+  return result;
+}
+
 static mini_Expression mini_parser_syntax_expression (
   mini_Parser* const P
 ) {
-  mini_parser_expect_any(P, 1, (mini_token_Id[]){ mini_token_b_number, mini_token_b_identifier });
+  mini_parser_expect_any(P, 2, (mini_token_Id[]){ mini_token_b_number, mini_token_b_identifier });
   mini_Token const tk = P->buf.ptr[P->pos];
   switch (tk.id) {
-    case mini_token_b_number : return mini_parser_syntax_expression_literal(P); break;
-    // case mini_token_b_identifier : mini_parser_syntax_expression_identifier(P); break;
-    default                  : mini_parser_error(P, "Unknown First Token for Expression: %02zu:%s", P->pos, mini_token_toString(tk.id)); break;
+    case mini_token_b_number     : return mini_parser_syntax_expression_literal(P);
+    case mini_token_b_identifier : return mini_parser_syntax_expression_identifier(P);
+    default                      : mini_parser_error(P, "Unknown First Token for Expression: %02zu:%s", P->pos, mini_token_toString(tk.id)); break;
   }
 }
 
@@ -84,8 +102,8 @@ static mini_Var mini_parser_syntax_statement_var (
   P->pos += 1;
   // Create the result
   mini_Var result = (mini_Var){
-    .Mutable = mini_true, // FIX: let vs var
-    .runtime = mini_true, // FIX: (let/var) vs const
+    .Mutable = mini_true,  // FIX: let vs var
+    .runtime = mini_true,  // FIX: (let/var) vs const
   };
   // Continue parsing the var
   mini_parser_expect(P, mini_token_wht_space);

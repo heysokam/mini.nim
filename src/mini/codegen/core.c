@@ -107,8 +107,7 @@ static void mini_codegen_c_expression_identifier (
   mini_Codegen* const          C,
   mini_Expression const* const expression
 ) {
-  (void)C;
-  (void)expression;
+  mini_string_add(&C->res.c, slate_source_location_from(&expression->data.identifier, C->ast.src.ptr));
 }
 
 static void mini_codegen_c_expression (
