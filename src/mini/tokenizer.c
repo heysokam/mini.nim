@@ -89,6 +89,12 @@ mini_cstring mini_token_toString (
     case mini_token_sp_dot            : return "sp_dot";
     case mini_token_sp_equal          : return "sp_equal";
     // Operators
+    case mini_token_op_plus           : return "op_plus";
+    case mini_token_op_minus          : return "op_minus";
+    case mini_token_op_star           : return "op_star";
+    case mini_token_op_slash          : return "op_slash";
+    case mini_token_op_dot            : return "op_dot";
+    case mini_token_op_equal          : return "op_equal";
     // Base
     case mini_token_b_identifier      : return "identifier";
     case mini_token_b_number          : return "number";
@@ -121,6 +127,7 @@ void mini_tokenizer_report (
 // Single Lexeme Tokens: Singles
 // clang-format off
 static void mini_tokenizer_colon (mini_Tokenizer* const T) { mini_tokenizer_add(T, mini_token_sp_colon, T->buf.ptr[T->pos].loc); }
+static void mini_tokenizer_semicolon (mini_Tokenizer* const T) { mini_tokenizer_add(T, mini_token_sp_semicolon, T->buf.ptr[T->pos].loc); }
 static void mini_tokenizer_newline (mini_Tokenizer* const T) { mini_tokenizer_add(T, mini_token_wht_newline, T->buf.ptr[T->pos].loc); }
 // clang-format on
 
@@ -155,6 +162,13 @@ static void mini_tokenizer_whitespace (
 }
 
 
+static void mini_tokenizer_equal (
+  mini_Tokenizer* const T
+) {
+  // FIX: Operator: Equal
+  mini_tokenizer_add(T, mini_token_sp_equal, T->buf.ptr[T->pos].loc);
+}
+
 static void mini_tokenizer_star (
   mini_Tokenizer* const T
 ) {
@@ -162,12 +176,15 @@ static void mini_tokenizer_star (
   mini_tokenizer_add(T, mini_token_sp_star, T->buf.ptr[T->pos].loc);
 }
 
-
-static void mini_tokenizer_equal (
+static void mini_tokenizer_plus (
   mini_Tokenizer* const T
 ) {
-  // FIX: Operator: Equal
-  mini_tokenizer_add(T, mini_token_sp_equal, T->buf.ptr[T->pos].loc);
+  mini_source_Location loc = T->buf.ptr[T->pos].loc;
+  while (T->buf.ptr[T->pos].id == slate_lexeme_plus) {  // FIX: Arbitrary +{any} operators
+    loc.end = T->buf.ptr[T->pos].loc.end;
+    T->pos += 1;
+  }
+  mini_tokenizer_add(T, mini_token_op_plus, loc);
 }
 
 
@@ -206,8 +223,11 @@ void mini_tokenizer_process (
       case slate_lexeme_parenthesis_left  : /* fall-through */
       case slate_lexeme_parenthesis_right : mini_tokenizer_parenthesis(T); break;
       case slate_lexeme_colon             : mini_tokenizer_colon(T); break;
-      case slate_lexeme_star              : mini_tokenizer_star(T); break;
+      case slate_lexeme_semicolon         : mini_tokenizer_semicolon(T); break;
       case slate_lexeme_equal             : mini_tokenizer_equal(T); break;
+      // Operators
+      case slate_lexeme_star              : mini_tokenizer_star(T); break;
+      case slate_lexeme_plus              : mini_tokenizer_plus(T); break;
       default                             : mini_tokenizer_error(T, "Unknown first Lexeme: %02zu:%s", T->pos, slate_lexeme_toString(lx.id)); break;
     }
     T->pos += 1;

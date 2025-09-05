@@ -67,6 +67,12 @@ typedef enum mini_token_Id {
   mini_token_sp_dot,        // .
   mini_token_sp_equal,      // =
   // Operators
+  mini_token_op_plus,   // Operators starting with  `+`
+  mini_token_op_minus,  // Operators starting with  `-`
+  mini_token_op_star,   // Operators starting with  `*`
+  mini_token_op_slash,  // Operators starting with  `/`
+  mini_token_op_dot,    // Operators starting with  `.`
+  mini_token_op_equal,  // Operators starting with  `=`
   // Whitespace
   mini_token_wht_space,    // ` ` \t
   mini_token_wht_newline,  // \r \n
