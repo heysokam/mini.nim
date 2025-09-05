@@ -187,6 +187,12 @@ static void mini_tokenizer_plus (
   mini_tokenizer_add(T, mini_token_op_plus, loc);
 }
 
+static void mini_tokenizer_minus (
+  mini_Tokenizer* const T
+) {
+  // FIX: Arbitrary -{any} operators
+  mini_tokenizer_add(T, mini_token_op_minus, T->buf.ptr[T->pos].loc);
+}
 
 static void mini_tokenizer_parenthesis (
   mini_Tokenizer* const T
@@ -228,6 +234,7 @@ void mini_tokenizer_process (
       // Operators
       case slate_lexeme_star              : mini_tokenizer_star(T); break;
       case slate_lexeme_plus              : mini_tokenizer_plus(T); break;
+      case slate_lexeme_minus             : mini_tokenizer_minus(T); break;
       default                             : mini_tokenizer_error(T, "Unknown first Lexeme: %02zu:%s", T->pos, slate_lexeme_toString(lx.id)); break;
     }
     T->pos += 1;
