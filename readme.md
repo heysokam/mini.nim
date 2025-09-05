@@ -118,3 +118,6 @@ Minim has minimal allocations and uses Data Oriented Design.
 `mini.nim`, instead, freely allocates memory inside each object field that represents either a list or a list-of-lists.  
 _eg: Statement.List, Node.List, Token.List, etc_
 
+## Reference Links
+- Very interesting points about C : https://queue.acm.org/detail.cfm?id=3212479
+
