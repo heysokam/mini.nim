@@ -120,4 +120,8 @@ _eg: Statement.List, Node.List, Token.List, etc_
 
 ## Reference Links
 - Very interesting points about C : https://queue.acm.org/detail.cfm?id=3212479
+- On Indentation Parsing:  
+  https://michaeldadams.org/papers/layout_parsing/  
+  https://michaeldadams.org/papers/layout_parsing_2/  
+  Less useful: https://en.m.wikibooks.org/wiki/Haskell/Indentation  
 
